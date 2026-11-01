@@ -7,7 +7,8 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "pg.ac.copnote"
     },
     "android": {
       "adaptiveIcon": {
@@ -15,10 +16,40 @@
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
-      }
+      },
+      "package": "pg.ac.copnote"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-sqlite",
+      "expo-sharing",
+      [
+        "expo-secure-store",
+        {
+          "faceIDPermission": false
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "CopNote uses the camera to photograph incident scenes and evidence.",
+          "photosPermission": "CopNote lets you attach existing photos to an incident page."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "CopNote records where an incident note was written."
+        }
+      ],
+      "expo-font"
+    ],
+    "scheme": "copnote",
+    "experiments": {
+      "typedRoutes": false
     }
   }
 }
