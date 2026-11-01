@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <!-- Single-colour mark for Android themed icons. Only the alpha channel is used,
+       so details are cut out of the shield with a mask. Scaled into the adaptive-icon safe zone. -->
+  <defs>
+    <mask id="cut">
+      <rect width="1024" height="1024" fill="#fff"/>
+      <path d="M512 190 L768 278 V500 C768 668 662 776 512 838 C362 776 256 668 256 500 V278 Z" fill="#000"/>
+      <path d="M512 232 L521 258 H549 L527 274 L535 300 L512 284 L489 300 L497 274 L475 258 H503 Z" fill="#fff"/>
+      <path d="M382 330 H592 L642 380 V720 H382 Z" fill="#fff"/>
+      <path d="M592 330 V380 H642" fill="none" stroke="#000" stroke-width="12"/>
+      <g stroke="#000" stroke-width="20" stroke-linecap="round">
+        <line x1="420" y1="430" x2="604" y2="430"/>
+        <line x1="420" y1="490" x2="604" y2="490"/>
+        <line x1="420" y1="550" x2="604" y2="550"/>
+        <line x1="420" y1="610" x2="540" y2="610"/>
+        <path d="M570 668 L606 632"/>
+      </g>
+    </mask>
+  </defs>
+  <g transform="translate(512 512) scale(0.6) translate(-512 -515)">
+    <g mask="url(#cut)">
+      <path d="M512 150 L800 250 V500 C800 690 680 810 512 880 C344 810 224 690 224 500 V250 Z" fill="#fff"/>
+    </g>
+  </g>
+</svg>

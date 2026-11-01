@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 400">
+  <!-- CopNote horizontal logo: mark + wordmark, for README, report cover and login screen. -->
+  <g transform="translate(-54 -17) scale(0.42)">
+  <defs><clipPath id="shield"><path d="M512 190 L768 278 V500 C768 668 662 776 512 838 C362 776 256 668 256 500 V278 Z"/></clipPath></defs>
+  <path d="M512 150 L800 250 V500 C800 690 680 810 512 880 C344 810 224 690 224 500 V250 Z" fill="#FCD116"/>
+  <path d="M512 190 L768 278 V500 C768 668 662 776 512 838 C362 776 256 668 256 500 V278 Z" fill="#0A0A0A"/>
+  <path d="M200 150 L840 150 L840 910 Z" fill="#CE1126" clip-path="url(#shield)"/>
+  
+  <g transform="translate(620 352) scale(0.92)" fill="none" stroke="#FCD116" stroke-linecap="round">
+    <path d="M14 18 C38 62 40 110 20 152" stroke-width="7"/>
+    <path d="M20 14 C56 56 66 108 54 156" stroke-width="9"/>
+    <path d="M26 10 C70 42 90 92 86 146" stroke-width="10"/>
+    <path d="M30 6 C84 26 112 70 116 122" stroke-width="9"/>
+    <path d="M32 2 C92 6 128 40 140 86" stroke-width="7"/>
+    <g stroke="none" fill="#FCD116">
+      <ellipse cx="2" cy="0" rx="38" ry="21" transform="rotate(-32)"/>
+      <path d="M-24 -18 C-30 -30 -34 -38 -36 -42 L-22 -40 C-16 -32 -10 -24 -8 -16 Z"/>
+      <circle cx="-34" cy="-40" r="15"/>
+      <path d="M-46 -46 L-76 -52 L-46 -34 Z"/>
+      <path d="M-6 -12 C0 -60 40 -94 92 -92 C82 -84 74 -78 68 -70 C78 -72 88 -70 96 -66 C68 -52 46 -28 26 0 Z"/>
+    </g>
+  </g>
+  <path d="M338.0,440.0 L343.4,454.5 L358.9,455.2 L346.8,464.9 L350.9,479.8 L338.0,471.2 L325.1,479.8 L329.2,464.9 L317.1,455.2 L332.6,454.5 Z M296.0,538.0 L301.4,552.5 L316.9,553.2 L304.8,562.9 L308.9,577.8 L296.0,569.2 L283.1,577.8 L287.2,562.9 L275.1,553.2 L290.6,552.5 Z M386.0,521.0 L390.7,533.5 L404.1,534.1 L393.6,542.5 L397.2,555.4 L386.0,548.0 L374.8,555.4 L378.4,542.5 L367.9,534.1 L381.3,533.5 Z M346.0,644.0 L351.9,659.8 L368.8,660.6 L355.6,671.1 L360.1,687.4 L346.0,678.1 L331.9,687.4 L336.4,671.1 L323.2,660.6 L340.1,659.8 Z M360.0,593.0 L362.7,600.3 L370.5,600.6 L364.4,605.4 L366.5,612.9 L360.0,608.6 L353.5,612.9 L355.6,605.4 L349.5,600.6 L357.3,600.3 Z" fill="#FFFFFF"/>
+  <path d="M412 380 H572 L612 420 V700 H412 Z" fill="#FFFFFF"/>
+  <path d="M572 380 V420 H612 Z" fill="#D1D5DB"/>
+  <line x1="440" y1="460" x2="584" y2="460" stroke="#0A0A0A" stroke-width="16" stroke-linecap="round"/><line x1="440" y1="512" x2="584" y2="512" stroke="#0A0A0A" stroke-width="16" stroke-linecap="round"/><line x1="440" y1="564" x2="584" y2="564" stroke="#0A0A0A" stroke-width="16" stroke-linecap="round"/><line x1="440" y1="616" x2="530" y2="616" stroke="#0A0A0A" stroke-width="16" stroke-linecap="round"/>
+  <path d="M552 668 L584 636" stroke="#CE1126" stroke-width="16" stroke-linecap="round"/></g>
+  <text x="320" y="240" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="168" font-weight="800" letter-spacing="-2">
+    <tspan fill="#0A0A0A">Cop</tspan><tspan fill="#CE1126">Note</tspan>
+  </text>
+  <text x="326" y="344" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="44" font-weight="600" fill="#4B5563" letter-spacing="6">DIGITAL POCKET NOTEBOOK</text>
+</svg>
