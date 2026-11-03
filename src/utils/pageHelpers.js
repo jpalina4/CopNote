@@ -10,11 +10,22 @@
 import { INCIDENT_TYPES, PAGE_STATUS } from './constants.js';
 import { toDateString, toTimeString } from './dates.js';
 
+/**
+ * Serial number that identifies a saved page across ALL officers, e.g.
+ * "10452-000012" = regimental number 10452, page 12. Regimental numbers are
+ * unique and page numbers never repeat per officer, so the pair is unique.
+ * Built from stored columns (not stored itself), so it can never drift.
+ * Drafts have no page number yet, so they have no serial.
+ */
+export const formatSerial = (regimentalNumber, pageNumber) =>
+  regimentalNumber && pageNumber ? `${regimentalNumber}-${String(pageNumber).padStart(6, '0')}` : null;
+
 /** SQLite columns use snake_case; JavaScript prefers camelCase. */
 export const rowToPage = (row) => ({
   id: row.id,
   officerId: row.officer_id,
   pageNumber: row.page_number,
+  serialNumber: formatSerial(row.regimental_number, row.page_number),
   title: row.title,
   incidentDate: row.incident_date ?? '',
   incidentTime: row.incident_time ?? '',

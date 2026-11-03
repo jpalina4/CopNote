@@ -78,6 +78,24 @@ test('draft -> edit -> lock assigns sequential page numbers', async () => {
   assert.ok(page.savedAt);
 });
 
+test('saved pages get a serial number that is unique across officers and searchable', async () => {
+  const { db, a, b } = await setup();
+  const draft = await insertDraft(db, a, completePage);
+  assert.equal((await getPage(db, a, draft)).serialNumber, null); // drafts have no serial
+  await lockPage(db, a, draft);
+  const other = await insertDraft(db, b, completePage);
+  await lockPage(db, b, other);
+
+  // Both are "Page 1", but their serials differ.
+  assert.equal((await getPage(db, a, draft)).serialNumber, '10001-000001');
+  assert.equal((await getPage(db, b, other)).serialNumber, '10002-000001');
+
+  const found = await listPages(db, a, { keyword: '10001-000001' });
+  assert.deepEqual(found.map((p) => p.serialNumber), ['10001-000001']);
+  assert.equal((await listPages(db, a, { keyword: '10002-000001' })).length, 0); // another officer's serial
+  assert.equal((await listPages(db, a, { keyword: '10001-000000' })).length, 0); // drafts never match
+});
+
 test('saved pages cannot be updated, deleted, or have photos changed', async () => {
   const { db, a } = await setup();
   const id = await insertDraft(db, a, completePage);

@@ -128,6 +128,7 @@ export default function PageDetailScreen({ pageId }) {
       <Text style={[type.title, styles.title]}>{page.title}</Text>
 
       <View style={styles.card}>
+        {page.serialNumber ? <Field label="Serial number" value={page.serialNumber} /> : null}
         <Field label="Date and time of incident" value={`${formatDate(page.incidentDate)} ${page.incidentTime}`.trim()} />
         <Field label="Location" value={page.location} />
         {page.latitude != null ? <Field label="GPS" value={formatCoords(page.latitude, page.longitude)} /> : null}

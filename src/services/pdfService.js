@@ -33,6 +33,7 @@ export async function buildPageHtml({ page, photos, amendments, officer }) {
     <h1>CopNote — ${escapeHtml(pageLabel(page))}: ${escapeHtml(page.title)}</h1>
     <p class="sub">${escapeHtml(`${officer.rank} ${officer.fullName}`)} · Reg. no. ${escapeHtml(officer.regimentalNumber)} · ${escapeHtml(officer.station)}</p>
     <table>
+      ${row('Serial number', page.serialNumber)}
       ${row('Incident date', `${formatDate(page.incidentDate)} ${page.incidentTime}`)}
       ${row('Location', page.location)}
       ${row('GPS', formatCoords(page.latitude, page.longitude))}

@@ -30,8 +30,9 @@ export const listPages = async (db, officerId, filters) => {
 
 export const getPage = async (db, officerId, pageId) => {
   const row = await db.getFirstAsync(
-    `SELECT p.*, (SELECT COUNT(*) FROM photos WHERE page_id = p.id) AS photo_count
-     FROM pages p WHERE p.id = ? AND p.officer_id = ?`,
+    `SELECT p.*, o.regimental_number, (SELECT COUNT(*) FROM photos WHERE page_id = p.id) AS photo_count
+     FROM pages p JOIN officers o ON o.id = p.officer_id
+     WHERE p.id = ? AND p.officer_id = ?`,
     [pageId, officerId],
   );
   return row ? rowToPage(row) : null;

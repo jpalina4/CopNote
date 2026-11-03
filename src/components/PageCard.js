@@ -7,12 +7,12 @@ import { colors, radius, spacing, type } from './theme';
 
 export default function PageCard({ page, onPress }) {
   const locked = isLocked(page);
-  const { title, incidentType, incidentDate, incidentTime, photoCount, location } = page; // destructuring
+  const { title, incidentType, incidentDate, incidentTime, photoCount, location, serialNumber } = page; // destructuring
   return (
     <Pressable
       onPress={onPress}
       accessibilityRole="button"
-      accessibilityLabel={`${pageLabel(page)}, ${title}, ${incidentType || 'no type'}, ${formatDate(incidentDate)}, ${photoCount} photos${locked ? ', locked' : ', draft'}`}
+      accessibilityLabel={`${pageLabel(page)}${serialNumber ? `, serial ${serialNumber}` : ''}, ${title}, ${incidentType || 'no type'}, ${formatDate(incidentDate)}, ${photoCount} photos${locked ? ', locked' : ', draft'}`}
       style={({ pressed }) => [styles.card, pressed && { opacity: 0.85 }]}
     >
       <View style={styles.header}>
@@ -27,6 +27,7 @@ export default function PageCard({ page, onPress }) {
       <Text style={styles.title} numberOfLines={2}>
         {title}
       </Text>
+      {serialNumber ? <Text style={styles.serial}>No. {serialNumber}</Text> : null}
       {location ? (
         <Text style={type.small} numberOfLines={1}>
           {location}
@@ -58,6 +59,7 @@ const styles = StyleSheet.create({
   badgeDraft: { backgroundColor: colors.warningBg },
   badgeText: { fontSize: 13, fontWeight: '700' },
   title: { ...type.body, fontWeight: '700', marginBottom: 2 },
+  serial: { fontSize: 12, fontWeight: '600', color: colors.textMuted, fontVariant: ['tabular-nums'], marginBottom: 2 },
   footer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: spacing.sm },
   type: { fontSize: 13, fontWeight: '600', color: colors.primary },
   photos: { flexDirection: 'row', alignItems: 'center', gap: 4 },

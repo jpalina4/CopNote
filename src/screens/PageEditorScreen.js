@@ -29,7 +29,7 @@ import { deleteDraft, getPage, insertDraft, lockPage, updateDraft } from '../dat
 import { deletePhoto, insertPhoto, listPhotos } from '../database/photoRepo';
 import { INCIDENT_TYPES, MAX_PHOTOS_PER_PAGE } from '../utils/constants';
 import { toDateString, toTimeString } from '../utils/dates';
-import { emptyPage, isLocked, removeAt, updateField } from '../utils/pageHelpers';
+import { emptyPage, formatSerial, isLocked, removeAt, updateField } from '../utils/pageHelpers';
 import { hasErrors, validatePage } from '../utils/validation';
 
 let tempKey = 0; // unique React keys for photos not yet in the database
@@ -177,7 +177,7 @@ export default function PageEditorScreen({ pageId: initialPageId = null }) {
     try {
       const id = await persistDraft();
       const pageNumber = await lockPage(db, officer.id, id);
-      const message = `Page ${pageNumber} saved and locked. A new blank page is ready.`;
+      const message = `Page ${pageNumber} (serial ${formatSerial(officer.regimentalNumber, pageNumber)}) saved and locked. A new blank page is ready.`;
       if (initialPageId) {
         // Editing an older draft: close this screen and open the "New page" tab.
         Alert.alert('Page saved', message);

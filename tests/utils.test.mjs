@@ -16,7 +16,7 @@ import {
   hasErrors,
 } from '../src/utils/validation.js';
 import { buildPageQuery } from '../src/utils/pageQuery.js';
-import { summarisePages, removeAt, updateField, escapeHtml, pageLabel } from '../src/utils/pageHelpers.js';
+import { summarisePages, removeAt, updateField, escapeHtml, pageLabel, formatSerial } from '../src/utils/pageHelpers.js';
 import { hashPin, safeEqual, verifyPin } from '../src/utils/hash.js';
 
 test('dates: validation rejects impossible values', () => {
@@ -98,6 +98,9 @@ test('immutable helpers do not modify their input', () => {
 test('pageLabel and escapeHtml', () => {
   assert.equal(pageLabel({ pageNumber: 4 }), 'Page 4');
   assert.equal(pageLabel({ pageNumber: null }), 'Draft');
+  assert.equal(formatSerial('10452', 12), '10452-000012');
+  assert.equal(formatSerial('PM/2210', 1), 'PM/2210-000001');
+  assert.equal(formatSerial('10452', null), null);
   assert.equal(escapeHtml('<b>"Tom" & Co</b>'), '&lt;b&gt;&quot;Tom&quot; &amp; Co&lt;/b&gt;');
 });
 
