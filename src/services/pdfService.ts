@@ -7,6 +7,7 @@
  */
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
+import { Platform } from 'react-native';
 import { escapeHtml, pageLabel } from '../utils/pageHelpers';
 import { formatDate, formatTimestamp, toTimestamp } from '../utils/dates';
 import { formatCoords } from './locationService';
@@ -60,8 +61,35 @@ export async function buildPageHtml({ page, photos, amendments, officer }: PageD
   </body></html>`;
 }
 
+/**
+ * expo-print can only print the current window on web, so the page goes into
+ * a hidden frame and the browser's print dialog does the rest ("Save as PDF"
+ * is one of its printers). No allow-scripts: the page text never runs as code.
+ */
+const printInBrowser = (html: string) => {
+  const frame = document.createElement('iframe');
+  frame.setAttribute('sandbox', 'allow-same-origin allow-modals');
+  frame.style.position = 'fixed';
+  frame.style.width = '0';
+  frame.style.height = '0';
+  frame.style.border = '0';
+  frame.onload = () => {
+    const printWindow = frame.contentWindow;
+    if (!printWindow) return;
+    printWindow.addEventListener('afterprint', () => frame.remove());
+    printWindow.focus();
+    printWindow.print();
+  };
+  frame.srcdoc = html;
+  document.body.appendChild(frame);
+};
+
 export async function sharePageAsPdf(details: PageDetails): Promise<void> {
   const html = await buildPageHtml(details);
+  if (Platform.OS === 'web') {
+    printInBrowser(html);
+    return;
+  }
   const { uri } = await Print.printToFileAsync({ html });
   if (!(await Sharing.isAvailableAsync())) {
     throw new Error(`Sharing is not available on this device. The PDF was saved to: ${uri}`);

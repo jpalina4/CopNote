@@ -32,6 +32,13 @@ export const radius = { sm: 6, md: 10, lg: 16 };
 
 export const MIN_TOUCH = 48;
 
+/** Content stops growing at these widths, so lines stay readable in a wide window. */
+export const CONTENT_MAX_WIDTH = 760;
+export const FORM_MAX_WIDTH = 480;
+
+/** From this window width the tab bar moves to the left side of the screen. */
+export const WIDE_SCREEN = 900;
+
 export const type: Record<'title' | 'heading' | 'body' | 'label' | 'small', TextStyle> = {
   title: { fontSize: 24, fontWeight: '700', color: colors.text },
   heading: { fontSize: 18, fontWeight: '700', color: colors.text },

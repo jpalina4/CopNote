@@ -13,7 +13,7 @@ import ChipGroup from '../components/ChipGroup';
 import PageCard from '../components/PageCard';
 import TextField from '../components/TextField';
 import { Banner, EmptyState, LoadingView } from '../components/StateViews';
-import { colors, MIN_TOUCH, radius, spacing, type } from '../components/theme';
+import { colors, CONTENT_MAX_WIDTH, MIN_TOUCH, radius, spacing, type } from '../components/theme';
 import { useAuth } from '../services/AuthContext';
 import { listPages } from '../database/pageRepo';
 import { INCIDENT_TYPES, PAGE_STATUS } from '../utils/constants';
@@ -140,7 +140,7 @@ export default function NotebookScreen() {
 
 const styles = StyleSheet.create({
   list: { flex: 1, backgroundColor: colors.background },
-  content: { padding: spacing.lg, paddingBottom: spacing.xl * 2 },
+  content: { width: '100%', maxWidth: CONTENT_MAX_WIDTH, alignSelf: 'center', padding: spacing.lg, paddingBottom: spacing.xl * 2 },
   searchRow: { flexDirection: 'row', alignItems: 'flex-end', gap: spacing.sm },
   flex: { flex: 1 },
   filterBtn: {

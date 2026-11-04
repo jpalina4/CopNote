@@ -11,7 +11,7 @@ import AppButton from '../components/AppButton';
 import Screen from '../components/Screen';
 import TextField from '../components/TextField';
 import { Banner } from '../components/StateViews';
-import { colors, spacing, type } from '../components/theme';
+import { colors, FORM_MAX_WIDTH, spacing, type } from '../components/theme';
 import { useAuth } from '../services/AuthContext';
 import { hasErrors, validateLogin } from '../utils/validation';
 
@@ -45,7 +45,7 @@ export default function LoginScreen() {
   };
 
   return (
-    <Screen edges={['top', 'bottom']}>
+    <Screen edges={['top', 'bottom']} contentStyle={{ maxWidth: FORM_MAX_WIDTH }}>
       <View style={styles.brand}>
         <Image source={logo} style={styles.logo} accessibilityIgnoresInvertColors />
         <Text style={styles.appName} accessibilityLabel="CopNote">

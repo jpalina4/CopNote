@@ -1,7 +1,11 @@
-/** Bottom tab bar shown after login: Dashboard, Notebook, New page. */
+/**
+ * Tab bar shown after login: Dashboard, Notebook, New page.
+ * At the bottom on a phone; down the left side in a wide window.
+ */
+import { useWindowDimensions } from 'react-native';
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { colors } from '../../components/theme';
+import { colors, WIDE_SCREEN } from '../../components/theme';
 
 /** Returns the tabBarIcon function React Navigation calls with the current colour and size. */
 const icon = (name) =>
@@ -10,16 +14,21 @@ const icon = (name) =>
   };
 
 export default function TabsLayout() {
+  const { width } = useWindowDimensions();
+  const wide = width >= WIDE_SCREEN;
   return (
     <Tabs
       screenOptions={{
+        tabBarPosition: wide ? 'left' : 'bottom',
+        tabBarLabelPosition: wide ? 'beside-icon' : 'below-icon',
         headerStyle: { backgroundColor: colors.primary },
         headerTintColor: '#fff',
         headerTitleStyle: { fontWeight: '700' },
         tabBarActiveTintColor: colors.brandRed,
+        tabBarActiveBackgroundColor: wide ? colors.background : 'transparent',
         tabBarInactiveTintColor: colors.textMuted,
         tabBarLabelStyle: { fontSize: 13, fontWeight: '600' },
-        tabBarStyle: { minHeight: 60 },
+        tabBarStyle: wide ? { width: 180 } : { minHeight: 60 },
       }}
     >
       <Tabs.Screen name="index" options={{ title: 'Dashboard', tabBarIcon: icon('speedometer-outline') }} />

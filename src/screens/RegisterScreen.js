@@ -41,7 +41,7 @@ export default function RegisterScreen() {
   return (
     <Screen>
       <Text style={[type.small, { marginBottom: spacing.lg }]}>
-        Your account is stored only on this phone. Your PIN is never stored; only a secure hash of it is kept.
+        Your account is stored only on this device. Your PIN is never stored; only a secure hash of it is kept.
       </Text>
       <Banner kind="error" message={formError} />
 

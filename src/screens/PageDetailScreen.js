@@ -3,7 +3,7 @@
  * amendments. Drafts show "Continue editing" and "Delete draft".
  */
 import { useCallback, useState } from 'react';
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 import { router, Stack, useFocusEffect } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import AppButton from '../components/AppButton';
@@ -13,6 +13,7 @@ import TextField from '../components/TextField';
 import { Banner, EmptyState, LoadingView } from '../components/StateViews';
 import { colors, radius, spacing, type } from '../components/theme';
 import { useAuth } from '../services/AuthContext';
+import { confirmAction } from '../services/dialogs';
 import { formatCoords } from '../services/locationService';
 import { sharePageAsPdf } from '../services/pdfService';
 import { deletePhotoFile } from '../services/photoService';
@@ -98,22 +99,21 @@ export default function PageDetailScreen({ pageId }) {
   };
 
   const confirmDelete = () =>
-    Alert.alert('Delete this draft?', 'The draft and its photos will be permanently deleted.', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Delete draft',
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            if (!(await deleteDraft(db, officer.id, page.id))) throw new Error('Only drafts can be deleted.');
-            photos.forEach((p) => deletePhotoFile(p.uri));
-            router.back();
-          } catch (e) {
-            setBanner({ kind: 'error', message: e.message });
-          }
-        },
+    confirmAction({
+      title: 'Delete this draft?',
+      message: 'The draft and its photos will be permanently deleted.',
+      confirmText: 'Delete draft',
+      destructive: true,
+      onConfirm: async () => {
+        try {
+          if (!(await deleteDraft(db, officer.id, page.id))) throw new Error('Only drafts can be deleted.');
+          photos.forEach((p) => deletePhotoFile(p.uri));
+          router.back();
+        } catch (e) {
+          setBanner({ kind: 'error', message: e.message });
+        }
       },
-    ]);
+    });
 
   return (
     <Screen>
@@ -157,7 +157,7 @@ export default function PageDetailScreen({ pageId }) {
           ))}
           <TextField label="Add an amendment" value={note} onChangeText={setNote} error={noteError} multiline hint="Write the correction or additional detail. The original text stays as it is." />
           <AppButton title="Add amendment" icon="add-circle-outline" variant="secondary" onPress={addAmendment} loading={busy === 'amend'} disabled={busy !== ''} />
-          <AppButton title="Share as PDF" icon="share-outline" onPress={share} loading={busy === 'pdf'} disabled={busy !== ''} style={styles.gapTop} />
+          <AppButton title={Platform.OS === 'web' ? 'Print or save as PDF' : 'Share as PDF'} icon={Platform.OS === 'web' ? 'print-outline' : 'share-outline'} onPress={share} loading={busy === 'pdf'} disabled={busy !== ''} style={styles.gapTop} />
         </>
       ) : (
         <View style={styles.gapTop}>

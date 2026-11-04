@@ -3,7 +3,7 @@
  * The numbers come from summarisePages(), a pure reduce over the page list.
  */
 import { useCallback, useState } from 'react';
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import AppButton from '../components/AppButton';
@@ -12,6 +12,7 @@ import Screen from '../components/Screen';
 import { Banner, EmptyState, LoadingView } from '../components/StateViews';
 import { colors, radius, spacing, type } from '../components/theme';
 import { useAuth } from '../services/AuthContext';
+import { confirmAction } from '../services/dialogs';
 import { listPages } from '../database/pageRepo';
 import { formatDate, toDateString } from '../utils/dates';
 import { summarisePages } from '../utils/pageHelpers';
@@ -46,10 +47,13 @@ export default function DashboardScreen() {
   );
 
   const confirmLogout = () =>
-    Alert.alert('Log out?', 'Unsaved changes on an open page will be lost.', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Log out', style: 'destructive', onPress: logout },
-    ]);
+    confirmAction({
+      title: 'Log out?',
+      message: 'Unsaved changes on an open page will be lost.',
+      confirmText: 'Log out',
+      destructive: true,
+      onConfirm: logout,
+    });
 
   if (error) return <Screen><Banner message={error} /></Screen>;
   if (!pages) return <LoadingView message="Opening notebook…" />;

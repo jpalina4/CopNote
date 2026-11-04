@@ -81,7 +81,14 @@ After changing `app.json`, or if you see strange caching errors, run `npx expo s
 
 **Android emulator:** with Android Studio and an emulator running, press `a` in the Expo terminal.
 
-> Web (`npm run web`) is **not supported**. The app depends on SQLite, the camera, SecureStore and the file system, which are designed for phones.
+**Windows browser:** press `w` in the Expo terminal, or run `npm run web`. Use Edge or Chrome. Differences from the phone app:
+
+- Data is saved in that browser only, separately from any phone. Clearing the browser's site data deletes it.
+- Refreshing the page asks you to log in again, because the browser has no secure storage for the session or the PIN pepper.
+- Photos come from "Choose photos" (no camera), and are stored inside the database.
+- "Print or save as PDF" opens the browser's print dialog.
+
+The web version is for demonstrating and reviewing the app. The phone app has the stronger PIN protection.
 
 ## Demo accounts (fictional)
 

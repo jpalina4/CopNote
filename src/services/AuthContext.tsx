@@ -12,7 +12,7 @@
  * the lock screen covers everything until the correct PIN is entered.
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { AppState } from 'react-native';
+import { AppState, Platform } from 'react-native';
 import { useSQLiteContext } from 'expo-sqlite';
 import * as authService from './authService';
 import { clearSession, loadSession, saveSession } from './sessionStore';
@@ -93,6 +93,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const lockNow = useCallback(() => setLocked(true), []);
+
+  // In a browser, moving the mouse or scrolling also counts as activity.
+  useEffect(() => {
+    if (Platform.OS !== 'web') return undefined;
+    const events = ['mousemove', 'keydown', 'wheel'];
+    events.forEach((name) => window.addEventListener(name, reportActivity, { passive: true }));
+    return () => events.forEach((name) => window.removeEventListener(name, reportActivity));
+  }, [reportActivity]);
 
   // Inactivity timer — only runs while signed in and unlocked.
   useEffect(() => {

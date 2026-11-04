@@ -5,7 +5,7 @@
 import type { ComponentProps, ReactNode } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 import { SafeAreaView, type Edge } from 'react-native-safe-area-context';
-import { colors, spacing } from './theme';
+import { colors, CONTENT_MAX_WIDTH, spacing } from './theme';
 
 interface ScreenProps {
   children: ReactNode;
@@ -35,5 +35,5 @@ export default function Screen({ children, scroll = true, edges = ['bottom'], co
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
   flex: { flex: 1 },
-  content: { padding: spacing.lg, paddingBottom: spacing.xl * 2 },
+  content: { width: '100%', maxWidth: CONTENT_MAX_WIDTH, alignSelf: 'center', padding: spacing.lg, paddingBottom: spacing.xl * 2 },
 });

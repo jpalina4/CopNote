@@ -10,7 +10,7 @@ import AppButton from '../components/AppButton';
 import Screen from '../components/Screen';
 import TextField from '../components/TextField';
 import { Banner } from '../components/StateViews';
-import { colors, spacing, type } from '../components/theme';
+import { colors, FORM_MAX_WIDTH, spacing, type } from '../components/theme';
 import { useAuth } from '../services/AuthContext';
 import { isValidPin } from '../utils/validation';
 
@@ -36,7 +36,7 @@ export default function LockScreen() {
 
   return (
     <View style={StyleSheet.absoluteFill} accessibilityViewIsModal>
-      <Screen edges={['top', 'bottom']}>
+      <Screen edges={['top', 'bottom']} contentStyle={{ maxWidth: FORM_MAX_WIDTH }}>
         <View style={styles.header}>
           <Ionicons name="lock-closed" size={56} color={colors.primary} />
           <Text style={[type.title, styles.gap]}>CopNote is locked</Text>

@@ -12,7 +12,7 @@
  * leaves no orphaned files behind.
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import AppButton from '../components/AppButton';
@@ -23,6 +23,7 @@ import TextField from '../components/TextField';
 import { Banner, LoadingView } from '../components/StateViews';
 import { colors, radius, spacing, type } from '../components/theme';
 import { useAuth } from '../services/AuthContext';
+import { confirmAction, showMessage } from '../services/dialogs';
 import { deletePhotoFile, persistPhoto, pickFromGallery, takePhoto } from '../services/photoService';
 import { formatCoords, getCurrentCoords } from '../services/locationService';
 import { deleteDraft, getPage, insertDraft, lockPage, updateDraft } from '../database/pageRepo';
@@ -64,7 +65,7 @@ export default function PageEditorScreen({ pageId: initialPageId = null }) {
         router.replace(`/page/${page.id}`); // saved pages cannot be edited
         return;
       } else {
-        const { id, officerId, status, pageNumber, createdAt, updatedAt, savedAt, photoCount, ...fields } = page;
+        const { id, officerId, status, pageNumber, serialNumber, createdAt, updatedAt, savedAt, photoCount, ...fields } = page;
         setForm(fields);
         const rows = await listPhotos(db, officer.id, id);
         setPhotos(rows.map((p) => ({ ...p, key: `db-${p.id}`, isNew: false })));
@@ -180,7 +181,7 @@ export default function PageEditorScreen({ pageId: initialPageId = null }) {
       const message = `Page ${pageNumber} (serial ${formatSerial(officer.regimentalNumber, pageNumber)}) saved and locked. A new blank page is ready.`;
       if (initialPageId) {
         // Editing an older draft: close this screen and open the "New page" tab.
-        Alert.alert('Page saved', message);
+        showMessage('Page saved', message);
         router.dismissTo('/new');
         return;
       }
@@ -197,43 +198,37 @@ export default function PageEditorScreen({ pageId: initialPageId = null }) {
     const found = validatePage(form, { forSave: true });
     setErrors(found);
     if (hasErrors(found)) return setBanner({ kind: 'error', message: 'This page is incomplete. Fix the highlighted fields before saving.' });
-    Alert.alert(
-      'Save and lock this page?',
-      'A saved page can no longer be edited or deleted. Corrections can only be added as amendments.',
-      [
-        { text: 'Keep editing', style: 'cancel' },
-        { text: 'Save & lock', onPress: lockAndClear },
-      ],
-    );
+    confirmAction({
+      title: 'Save and lock this page?',
+      message: 'A saved page can no longer be edited or deleted. Corrections can only be added as amendments.',
+      confirmText: 'Save & lock',
+      cancelText: 'Keep editing',
+      onConfirm: lockAndClear,
+    });
   };
 
   const onDiscard = () => {
     const isStored = Boolean(pageId);
-    Alert.alert(
-      isStored ? 'Delete this draft?' : 'Discard this page?',
-      isStored ? 'The draft and its photos will be permanently deleted.' : 'Everything typed on this page will be cleared.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: isStored ? 'Delete draft' : 'Discard',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              if (isStored) {
-                const stored = await listPhotos(db, officer.id, pageId);
-                if (!(await deleteDraft(db, officer.id, pageId))) throw new Error('Only drafts can be deleted.');
-                stored.forEach((p) => deletePhotoFile(p.uri));
-              }
-              resetToBlankPage();
-              setBanner({ kind: 'success', message: isStored ? 'Draft deleted.' : 'Page cleared.' });
-              if (initialPageId) router.back();
-            } catch (e) {
-              setBanner({ kind: 'error', message: e.message });
-            }
-          },
-        },
-      ],
-    );
+    confirmAction({
+      title: isStored ? 'Delete this draft?' : 'Discard this page?',
+      message: isStored ? 'The draft and its photos will be permanently deleted.' : 'Everything typed on this page will be cleared.',
+      confirmText: isStored ? 'Delete draft' : 'Discard',
+      destructive: true,
+      onConfirm: async () => {
+        try {
+          if (isStored) {
+            const stored = await listPhotos(db, officer.id, pageId);
+            if (!(await deleteDraft(db, officer.id, pageId))) throw new Error('Only drafts can be deleted.');
+            stored.forEach((p) => deletePhotoFile(p.uri));
+          }
+          resetToBlankPage();
+          setBanner({ kind: 'success', message: isStored ? 'Draft deleted.' : 'Page cleared.' });
+          if (initialPageId) router.back();
+        } catch (e) {
+          setBanner({ kind: 'error', message: e.message });
+        }
+      },
+    });
   };
 
   if (loading) return <LoadingView message="Opening draft…" />;
@@ -286,8 +281,11 @@ export default function PageEditorScreen({ pageId: initialPageId = null }) {
       </Text>
       <PhotoGrid photos={photos} onRemove={removePhoto} />
       <View style={styles.row}>
-        <AppButton title="Camera" variant="secondary" icon="camera-outline" onPress={() => addPhotos('camera')} disabled={isWorking} loading={busy === 'photo'} style={styles.flex} />
-        <AppButton title="Gallery" variant="secondary" icon="images-outline" onPress={() => addPhotos('gallery')} disabled={isWorking} style={styles.flex} />
+        {/* In a desktop browser the camera option would only open a file chooser. */}
+        {Platform.OS !== 'web' ? (
+          <AppButton title="Camera" variant="secondary" icon="camera-outline" onPress={() => addPhotos('camera')} disabled={isWorking} loading={busy === 'photo'} style={styles.flex} />
+        ) : null}
+        <AppButton title={Platform.OS === 'web' ? 'Choose photos' : 'Gallery'} variant="secondary" icon="images-outline" onPress={() => addPhotos('gallery')} disabled={isWorking} style={styles.flex} />
       </View>
 
       <View style={styles.actions}>
