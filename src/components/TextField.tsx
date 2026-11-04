@@ -5,11 +5,20 @@
  * straight to <TextInput>, so callers can still set keyboardType, maxLength,
  * secureTextEntry, etc.
  */
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, Text, TextInput, View, type StyleProp, type TextInputProps, type ViewStyle } from 'react-native';
 import { useOptionalAuth } from '../services/AuthContext';
 import { colors, MIN_TOUCH, radius, spacing, type } from './theme';
 
-export default function TextField({ label, error, hint, multiline = false, onChangeText, style, required = false, ...inputProps }) {
+interface TextFieldProps extends Omit<TextInputProps, 'style'> {
+  label: string;
+  error?: string;
+  hint?: string;
+  required?: boolean;
+  /** Style for the wrapper around the label, input and error. */
+  style?: StyleProp<ViewStyle>;
+}
+
+export default function TextField({ label, error, hint, multiline = false, onChangeText, style, required = false, ...inputProps }: TextFieldProps) {
   const auth = useOptionalAuth();
   return (
     <View style={[styles.wrapper, style]}>

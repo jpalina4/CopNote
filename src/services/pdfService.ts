@@ -11,11 +11,19 @@ import { escapeHtml, pageLabel } from '../utils/pageHelpers';
 import { formatDate, formatTimestamp, toTimestamp } from '../utils/dates';
 import { formatCoords } from './locationService';
 import { photoAsDataUri } from './photoService';
+import type { Amendment, Officer, Page, Photo } from '../types';
 
-const row = (label, value) =>
+export interface PageDetails {
+  page: Page;
+  photos: Photo[];
+  amendments: Amendment[];
+  officer: Officer;
+}
+
+const row = (label: string, value: string | null | undefined) =>
   `<tr><th>${escapeHtml(label)}</th><td>${escapeHtml(value || '—')}</td></tr>`;
 
-export async function buildPageHtml({ page, photos, amendments, officer }) {
+export async function buildPageHtml({ page, photos, amendments, officer }: PageDetails): Promise<string> {
   // iOS cannot load local file:// images while printing, so inline them as base64.
   const dataUris = (await Promise.all(photos.map((p) => photoAsDataUri(p.uri)))).filter(Boolean);
 
@@ -52,7 +60,7 @@ export async function buildPageHtml({ page, photos, amendments, officer }) {
   </body></html>`;
 }
 
-export async function sharePageAsPdf(details) {
+export async function sharePageAsPdf(details: PageDetails): Promise<void> {
   const html = await buildPageHtml(details);
   const { uri } = await Print.printToFileAsync({ html });
   if (!(await Sharing.isAvailableAsync())) {

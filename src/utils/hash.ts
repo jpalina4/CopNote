@@ -25,8 +25,9 @@
 import { pbkdf2Async } from '@noble/hashes/pbkdf2.js';
 import { sha256 } from '@noble/hashes/sha2.js';
 import { bytesToHex, hexToBytes, utf8ToBytes } from '@noble/hashes/utils.js';
+import type { OfficerRow } from '../types.ts';
 
-export const hashPin = async (pin, saltHex, iterations, pepper = '') => {
+export const hashPin = async (pin: string, saltHex: string, iterations: number, pepper = ''): Promise<string> => {
   const key = await pbkdf2Async(sha256, utf8ToBytes(`${pepper}:${pin}`), hexToBytes(saltHex), {
     c: iterations,
     dkLen: 32,
@@ -38,14 +39,18 @@ export const hashPin = async (pin, saltHex, iterations, pepper = '') => {
  * Compare two hex strings in constant time, so the time taken does not
  * reveal how many leading characters matched.
  */
-export const safeEqual = (a, b) => {
+export const safeEqual = (a: unknown, b: unknown): boolean => {
   if (typeof a !== 'string' || typeof b !== 'string' || a.length !== b.length) return false;
   let diff = 0;
   for (let i = 0; i < a.length; i += 1) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
   return diff === 0;
 };
 
-export const verifyPin = async (pin, { pin_hash, pin_salt, pin_iterations }, pepper = '') =>
+export const verifyPin = async (
+  pin: string,
+  { pin_hash, pin_salt, pin_iterations }: Pick<OfficerRow, 'pin_hash' | 'pin_salt' | 'pin_iterations'>,
+  pepper = '',
+): Promise<boolean> =>
   safeEqual(await hashPin(pin, pin_salt, pin_iterations, pepper), pin_hash);
 
 export { bytesToHex };

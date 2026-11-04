@@ -2,11 +2,15 @@
  * Small views for the three "non-happy" states every list screen needs:
  * loading, empty, and a form-level error/notice banner.
  */
+import type { ReactNode } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, radius, spacing, type } from './theme';
 
-export function LoadingView({ message = 'Loading…' }) {
+type IconName = keyof typeof Ionicons.glyphMap;
+export type BannerKind = 'error' | 'success' | 'warning';
+
+export function LoadingView({ message = 'Loading…' }: { message?: string }) {
   return (
     <View style={styles.center} accessibilityLiveRegion="polite">
       <ActivityIndicator size="large" color={colors.primary} />
@@ -15,7 +19,14 @@ export function LoadingView({ message = 'Loading…' }) {
   );
 }
 
-export function EmptyState({ icon = 'document-text-outline', title, message, children }) {
+interface EmptyStateProps {
+  icon?: IconName;
+  title: string;
+  message?: string;
+  children?: ReactNode;
+}
+
+export function EmptyState({ icon = 'document-text-outline', title, message, children }: EmptyStateProps) {
   return (
     <View style={styles.center}>
       <Ionicons name={icon} size={56} color={colors.border} />
@@ -26,13 +37,13 @@ export function EmptyState({ icon = 'document-text-outline', title, message, chi
   );
 }
 
-const BANNER = {
+const BANNER: Record<BannerKind, { bg: string; fg: string; icon: IconName }> = {
   error: { bg: colors.dangerBg, fg: colors.danger, icon: 'alert-circle' },
   success: { bg: colors.successBg, fg: colors.success, icon: 'checkmark-circle' },
   warning: { bg: colors.warningBg, fg: colors.warning, icon: 'lock-closed' },
 };
 
-export function Banner({ kind = 'error', message }) {
+export function Banner({ kind = 'error', message }: { kind?: BannerKind; message?: string | null }) {
   if (!message) return null;
   const b = BANNER[kind];
   return (

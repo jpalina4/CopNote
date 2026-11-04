@@ -4,8 +4,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { formatDate } from '../utils/dates';
 import { isLocked, pageLabel } from '../utils/pageHelpers';
 import { colors, radius, spacing, type } from './theme';
+import type { Page } from '../types';
 
-export default function PageCard({ page, onPress }) {
+export default function PageCard({ page, onPress }: { page: Page; onPress: () => void }) {
   const locked = isLocked(page);
   const { title, incidentType, incidentDate, incidentTime, photoCount, location, serialNumber } = page; // destructuring
   return (

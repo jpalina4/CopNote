@@ -7,8 +7,17 @@
  *  - reduce: fold a list into one value (a summary of counts)
  *  - immutable updates: return NEW objects/arrays rather than changing old ones
  */
-import { INCIDENT_TYPES, PAGE_STATUS } from './constants.js';
-import { toDateString, toTimeString } from './dates.js';
+import { INCIDENT_TYPES, PAGE_STATUS } from './constants.ts';
+import { toDateString, toTimeString } from './dates.ts';
+import type { Page, PageFields, PageRow } from '../types.ts';
+
+export interface PageSummary {
+  total: number;
+  saved: number;
+  drafts: number;
+  today: number;
+  byType: Record<string, number>;
+}
 
 /**
  * Serial number that identifies a saved page across ALL officers, e.g.
@@ -17,11 +26,11 @@ import { toDateString, toTimeString } from './dates.js';
  * Built from stored columns (not stored itself), so it can never drift.
  * Drafts have no page number yet, so they have no serial.
  */
-export const formatSerial = (regimentalNumber, pageNumber) =>
+export const formatSerial = (regimentalNumber: string | null | undefined, pageNumber: number | null | undefined): string | null =>
   regimentalNumber && pageNumber ? `${regimentalNumber}-${String(pageNumber).padStart(6, '0')}` : null;
 
 /** SQLite columns use snake_case; JavaScript prefers camelCase. */
-export const rowToPage = (row) => ({
+export const rowToPage = (row: PageRow): Page => ({
   id: row.id,
   officerId: row.officer_id,
   pageNumber: row.page_number,
@@ -44,7 +53,7 @@ export const rowToPage = (row) => ({
 });
 
 /** A fresh, blank notebook page. The date and time default to "now". */
-export const emptyPage = (now = new Date()) => ({
+export const emptyPage = (now: Date = new Date()): PageFields => ({
   title: '',
   incidentDate: toDateString(now),
   incidentTime: toTimeString(now),
@@ -58,22 +67,25 @@ export const emptyPage = (now = new Date()) => ({
 });
 
 /** Immutable update: returns a NEW page object with one field changed. */
-export const updateField = (page, field, value) => ({ ...page, [field]: value });
+export const updateField = <T extends object, K extends keyof T>(page: T, field: K, value: T[K]): T => ({ ...page, [field]: value });
 
 /** Immutable removal from an array — the original array is untouched. */
-export const removeAt = (items, index) => items.filter((_, i) => i !== index);
+export const removeAt = <T>(items: T[], index: number): T[] => items.filter((_, i) => i !== index);
 
-export const isLocked = (page) => page?.status === PAGE_STATUS.SAVED;
+export const isLocked = (page: Pick<Page, 'status'> | null | undefined): boolean => page?.status === PAGE_STATUS.SAVED;
 
 /** "Page 12" for saved pages, "Draft" for drafts (drafts get a number only when saved). */
-export const pageLabel = (page) => (page.pageNumber ? `Page ${page.pageNumber}` : 'Draft');
+export const pageLabel = (page: Pick<Page, 'pageNumber'>): string => (page.pageNumber ? `Page ${page.pageNumber}` : 'Draft');
 
 /**
  * Dashboard summary built with reduce.
  * Starts with every incident type at zero so the chart always shows all types.
  */
-export const summarisePages = (pages, today = toDateString()) =>
-  pages.reduce(
+export const summarisePages = (
+  pages: Pick<Page, 'status' | 'incidentType' | 'createdAt'>[],
+  today: string = toDateString(),
+): PageSummary =>
+  pages.reduce<PageSummary>(
     (acc, page) => ({
       total: acc.total + 1,
       saved: acc.saved + (page.status === PAGE_STATUS.SAVED ? 1 : 0),
@@ -93,7 +105,7 @@ export const summarisePages = (pages, today = toDateString()) =>
   );
 
 /** Escape text before inserting it into HTML for the PDF export. */
-export const escapeHtml = (text = '') =>
+export const escapeHtml = (text: unknown = ''): string =>
   String(text)
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')

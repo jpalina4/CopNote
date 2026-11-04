@@ -9,12 +9,14 @@
  *   '; DROP TABLE pages; --
  * is treated as plain text to match.
  */
-export const buildPageQuery = (officerId, filters = {}) => {
+import type { PageFilters, SQLValue } from '../types.ts';
+
+export const buildPageQuery = (officerId: number, filters: PageFilters = {}): { sql: string; params: SQLValue[] } => {
   const { keyword = '', incidentType = '', status = '', fromDate = '', toDate = '' } = filters;
 
   // Start from a fixed list of conditions and add more as needed.
   const conditions = ['p.officer_id = ?'];
-  const params = [officerId];
+  const params: SQLValue[] = [officerId];
 
   const term = keyword.trim();
   if (term) {

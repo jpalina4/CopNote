@@ -3,18 +3,31 @@
  * colours and accessibility everywhere. Variants are chosen with a prop:
  *   <AppButton title="Save" onPress={save} variant="primary" loading={busy} />
  */
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, MIN_TOUCH, radius, spacing } from './theme';
 
-const VARIANTS = {
+type Variant = 'primary' | 'secondary' | 'danger' | 'ghost';
+
+interface AppButtonProps {
+  title: string;
+  onPress: () => void;
+  variant?: Variant;
+  icon?: keyof typeof Ionicons.glyphMap;
+  loading?: boolean;
+  disabled?: boolean;
+  style?: StyleProp<ViewStyle>;
+  accessibilityHint?: string;
+}
+
+const VARIANTS: Record<Variant, { bg: string; fg: string; border: string }> = {
   primary: { bg: colors.primary, fg: '#fff', border: colors.primary },
   secondary: { bg: colors.surface, fg: colors.primary, border: colors.primary },
   danger: { bg: colors.danger, fg: '#fff', border: colors.danger },
   ghost: { bg: 'transparent', fg: colors.primary, border: 'transparent' },
 };
 
-export default function AppButton({ title, onPress, variant = 'primary', icon, loading = false, disabled = false, style, accessibilityHint }) {
+export default function AppButton({ title, onPress, variant = 'primary', icon, loading = false, disabled = false, style, accessibilityHint }: AppButtonProps) {
   const v = VARIANTS[variant];
   const inactive = disabled || loading;
   return (

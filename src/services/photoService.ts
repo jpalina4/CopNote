@@ -16,7 +16,7 @@ import * as ImagePicker from 'expo-image-picker';
 
 export class PermissionDeniedError extends Error {}
 
-const PICKER_OPTIONS = { mediaTypes: ['images'], quality: 0.6 }; // 0.6 keeps files small
+const PICKER_OPTIONS: ImagePicker.ImagePickerOptions = { mediaTypes: ['images'], quality: 0.6 }; // 0.6 keeps files small
 
 const photosDir = () => {
   const dir = new Directory(Paths.document, 'photos');
@@ -25,14 +25,14 @@ const photosDir = () => {
 };
 
 /** Returns an array of temporary URIs (empty if the officer cancelled). */
-export async function takePhoto() {
+export async function takePhoto(): Promise<string[]> {
   const { granted } = await ImagePicker.requestCameraPermissionsAsync();
   if (!granted) throw new PermissionDeniedError('Camera permission is off. Enable it in Settings > Apps > CopNote.');
   const result = await ImagePicker.launchCameraAsync(PICKER_OPTIONS);
   return result.canceled ? [] : result.assets.map((a) => a.uri);
 }
 
-export async function pickFromGallery(limit) {
+export async function pickFromGallery(limit: number): Promise<string[]> {
   const { granted } = await ImagePicker.requestMediaLibraryPermissionsAsync();
   if (!granted) throw new PermissionDeniedError('Photo library permission is off. Enable it in Settings > Apps > CopNote.');
   const result = await ImagePicker.launchImageLibraryAsync({
@@ -44,7 +44,7 @@ export async function pickFromGallery(limit) {
 }
 
 /** Copy a temporary image into permanent private storage; returns the new URI. */
-export async function persistPhoto(tempUri) {
+export async function persistPhoto(tempUri: string): Promise<string> {
   const source = new File(tempUri);
   const extension = (source.extension || '.jpg').toLowerCase();
   const destination = new File(photosDir(), `${Crypto.randomUUID()}${extension}`);
@@ -52,7 +52,7 @@ export async function persistPhoto(tempUri) {
   return destination.uri;
 }
 
-export function deletePhotoFile(uri) {
+export function deletePhotoFile(uri: string): void {
   try {
     const file = new File(uri);
     if (file.exists) file.delete();
@@ -62,7 +62,7 @@ export function deletePhotoFile(uri) {
 }
 
 /** Used by the PDF export: embed images as base64 so they print on iOS too. */
-export async function photoAsDataUri(uri) {
+export async function photoAsDataUri(uri: string): Promise<string | null> {
   try {
     const base64 = await new File(uri).base64();
     return `data:image/jpeg;base64,${base64}`;

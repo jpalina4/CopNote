@@ -7,24 +7,39 @@
  * touch React state or the database, they are easy to unit test
  * (see tests/utils.test.mjs) and reuse on any screen.
  */
-import { INCIDENT_TYPES, RANKS } from './constants.js';
-import { isValidDate, isValidTime } from './dates.js';
+import { INCIDENT_TYPES, RANKS } from './constants.ts';
+import { isValidDate, isValidTime } from './dates.ts';
+import type { FieldErrors, PageFields } from '../types.ts';
 
-const trimmed = (v) => (typeof v === 'string' ? v.trim() : '');
+export interface RegistrationInput {
+  fullName: string;
+  regimentalNumber: string;
+  rank: string;
+  station: string;
+  pin: string;
+  confirmPin: string;
+}
+
+export interface LoginInput {
+  regimentalNumber: string;
+  pin: string;
+}
+
+const trimmed = (v: unknown): string => (typeof v === 'string' ? v.trim() : '');
 
 /**
  * Regimental numbers vary by force and era, so we accept 3–10 letters/digits
  * (optionally with one hyphen or slash), e.g. "12345", "RPNGC-4821", "PM/2210".
  * We normalise to upper case so "rpngc-4821" and "RPNGC-4821" are the same officer.
  */
-export const normaliseRegimentalNumber = (value) => trimmed(value).toUpperCase().replace(/\s+/g, '');
-export const isValidRegimentalNumber = (value) =>
+export const normaliseRegimentalNumber = (value: unknown): string => trimmed(value).toUpperCase().replace(/\s+/g, '');
+export const isValidRegimentalNumber = (value: string): boolean =>
   /^[A-Z0-9]{1,8}([-/][A-Z0-9]{1,8})?$/.test(value) && value.replace(/[-/]/g, '').length >= 3;
 
-export const isValidPin = (pin) => /^\d{4,6}$/.test(pin ?? '');
+export const isValidPin = (pin: string | null | undefined): boolean => /^\d{4,6}$/.test(pin ?? '');
 
-export const validateRegistration = ({ fullName, regimentalNumber, rank, station, pin, confirmPin }) => {
-  const errors = {};
+export const validateRegistration = ({ fullName, regimentalNumber, rank, station, pin, confirmPin }: RegistrationInput): FieldErrors => {
+  const errors: FieldErrors = {};
   const name = trimmed(fullName);
   if (name.length < 3) errors.fullName = 'Enter your full name (at least 3 characters).';
   else if (!/^[A-Za-z][A-Za-z .'-]*$/.test(name)) errors.fullName = 'Name can contain letters, spaces, apostrophes and hyphens only.';
@@ -41,8 +56,8 @@ export const validateRegistration = ({ fullName, regimentalNumber, rank, station
   return errors;
 };
 
-export const validateLogin = ({ regimentalNumber, pin }) => {
-  const errors = {};
+export const validateLogin = ({ regimentalNumber, pin }: LoginInput): FieldErrors => {
+  const errors: FieldErrors = {};
   if (!normaliseRegimentalNumber(regimentalNumber)) errors.regimentalNumber = 'Enter your regimental number.';
   if (!isValidPin(pin)) errors.pin = 'Enter your 4 to 6 digit PIN.';
   return errors;
@@ -54,8 +69,8 @@ export const validateLogin = ({ regimentalNumber, pin }) => {
  *  - a page being SAVED (locked) must be complete, because it can never be
  *    edited afterwards.
  */
-export const validatePage = (page, { forSave }) => {
-  const errors = {};
+export const validatePage = (page: Partial<PageFields>, { forSave }: { forSave: boolean }): FieldErrors => {
+  const errors: FieldErrors = {};
   const title = trimmed(page.title);
   if (title.length < 3) errors.title = 'Give the incident a short title (at least 3 characters).';
   else if (title.length > 120) errors.title = 'Title must be 120 characters or fewer.';
@@ -75,7 +90,7 @@ export const validatePage = (page, { forSave }) => {
   return errors;
 };
 
-export const validateAmendment = (note) =>
+export const validateAmendment = (note: string): FieldErrors =>
   trimmed(note).length < 5 ? { note: 'An amendment must be at least 5 characters.' } : {};
 
-export const hasErrors = (errors) => Object.keys(errors).length > 0;
+export const hasErrors = (errors: FieldErrors): boolean => Object.keys(errors).length > 0;

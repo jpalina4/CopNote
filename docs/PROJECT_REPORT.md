@@ -178,7 +178,8 @@ officers 1 ───< pages 1 ───< photos
 
 | Check | Result |
 |---|---|
-| `npm test`: 18 automated tests | All pass |
+| `npm test`: 19 automated tests | All pass |
+| `npm run typecheck` (TypeScript, strict mode) | No errors |
 | `npm run lint` (ESLint, eslint-config-expo, React Compiler rules) | No problems |
 | `npx expo-doctor` | 20/20 checks pass |
 | `npx expo export` for Android and iOS | Both bundles compile (Hermes bytecode) |
@@ -189,7 +190,9 @@ The tests cover:
 
 Camera, gallery, GPS, SecureStore, PDF sharing, the inactivity lock and login speed must be tested on a real phone. The README contains a device-testing checklist.
 
-## 8. JavaScript and React concepts used
+## 8. JavaScript, TypeScript and React concepts used
+
+The app is written in JavaScript and TypeScript side by side. TypeScript is used for the data types (`src/types.ts`), utilities, database repositories, services and reusable components, where a wrong field name or a missing value would otherwise only show up at run time. Screens, route files, seed data and tests stay in JavaScript.
 
 | Concept | Where |
 |---|---|
@@ -205,6 +208,10 @@ Camera, gallery, GPS, SecureStore, PDF sharing, the inactivity lock and login sp
 | Refs | `useRef` for the last-activity time and the scroll view |
 | Context and custom hooks | `AuthProvider` / `useAuth()` |
 | Controlled forms | All inputs: value from state, `onChangeText` updates state |
+| Interfaces and type aliases | `Page`, `Officer`, `PageRow` in `src/types.ts`; component props such as `AppButtonProps` |
+| Union and literal types | `PageStatus = 'draft' \| 'saved'`, `CoordsResult` in `locationService.ts` |
+| Generics | `removeAt<T>()`, `db.getAllAsync<PageRow>()` |
+| Type-only imports | `import type { Page } from '../types'` (removed at build time) |
 
 ## 9. Future improvements
 

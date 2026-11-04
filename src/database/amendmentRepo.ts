@@ -2,10 +2,19 @@
  * Amendments: append-only corrections to a SAVED page.
  * There is deliberately no update or delete function here.
  */
-import { toTimestamp } from '../utils/dates.js';
+import { toTimestamp } from '../utils/dates.ts';
+import type { Amendment, Db } from '../types.ts';
 
-export const listAmendments = async (db, officerId, pageId) => {
-  const rows = await db.getAllAsync(
+interface AmendmentRow {
+  id: number;
+  note: string;
+  created_at: string;
+  full_name: string;
+  rank: string;
+}
+
+export const listAmendments = async (db: Db, officerId: number, pageId: number): Promise<Amendment[]> => {
+  const rows = await db.getAllAsync<AmendmentRow>(
     `SELECT a.id, a.note, a.created_at, o.full_name, o.rank
      FROM amendments a
      JOIN pages p ON p.id = a.page_id
@@ -23,7 +32,7 @@ export const listAmendments = async (db, officerId, pageId) => {
 };
 
 /** Amendments are only allowed on saved pages that belong to this officer. */
-export const insertAmendment = async (db, officerId, pageId, note) => {
+export const insertAmendment = async (db: Db, officerId: number, pageId: number, note: string): Promise<void> => {
   const result = await db.runAsync(
     `INSERT INTO amendments (page_id, officer_id, note, created_at)
      SELECT id, ?, ?, ? FROM pages WHERE id = ? AND officer_id = ? AND status = 'saved'`,

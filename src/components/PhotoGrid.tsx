@@ -8,8 +8,20 @@ import { Image, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, MIN_TOUCH, radius, spacing, type } from './theme';
 
-export default function PhotoGrid({ photos, onRemove }) {
-  const [openIndex, setOpenIndex] = useState(null);
+/** Saved photos have an id; photos still being added in the editor have a key. */
+export interface GridPhoto {
+  uri: string;
+  id?: number;
+  key?: string;
+}
+
+interface PhotoGridProps {
+  photos: GridPhoto[];
+  onRemove?: (index: number) => void;
+}
+
+export default function PhotoGrid({ photos, onRemove }: PhotoGridProps) {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
   if (photos.length === 0) return <Text style={[type.small, styles.none]}>No photos attached.</Text>;
 
   return (
@@ -41,18 +53,18 @@ export default function PhotoGrid({ photos, onRemove }) {
           <View style={styles.viewerBar}>
             <Pressable
               disabled={openIndex === 0}
-              onPress={() => setOpenIndex((i) => i - 1)}
+              onPress={() => setOpenIndex((i) => (i ?? 0) - 1)}
               accessibilityLabel="Previous photo"
               style={styles.viewerBtn}
             >
               <Ionicons name="chevron-back" size={28} color={openIndex === 0 ? '#666' : '#fff'} />
             </Pressable>
             <Text style={styles.viewerText}>
-              {openIndex + 1} / {photos.length}
+              {(openIndex ?? 0) + 1} / {photos.length}
             </Text>
             <Pressable
               disabled={openIndex === photos.length - 1}
-              onPress={() => setOpenIndex((i) => i + 1)}
+              onPress={() => setOpenIndex((i) => (i ?? 0) + 1)}
               accessibilityLabel="Next photo"
               style={styles.viewerBtn}
             >

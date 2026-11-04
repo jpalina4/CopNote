@@ -32,7 +32,8 @@ opens, just like turning to a new page in a bound notebook.
 
 | Package | Purpose |
 |---|---|
-| Expo SDK 58, React Native 0.88, React 19 | App framework (JavaScript) |
+| Expo SDK 58, React Native 0.88, React 19 | App framework (JavaScript and TypeScript) |
+| TypeScript | Type checking for the data layer, services and components |
 | expo-router | File-based navigation with protected routes |
 | expo-sqlite | Local SQLite database |
 | expo-file-system | Copies photos into private app storage |
@@ -50,7 +51,7 @@ All of these are included in **Expo Go**, so no custom native build is needed fo
 ## Installation
 
 **Requirements**
-- Node.js 20 LTS or newer (developed with Node 24). Check with `node -v`.
+- Node.js 22.18 or newer (developed with Node 24). The tests load `.ts` files directly, which needs Node's built-in type stripping. Check with `node -v`.
 - A phone with **Expo Go** from the Play Store or App Store. The Expo Go version must support **SDK 58**.
 - Phone and computer on the **same Wi-Fi** network. A phone hotspot works if campus Wi-Fi blocks devices from seeing each other.
 
@@ -98,7 +99,8 @@ To reset the demo data, clear Expo Go's app data. On Android, long-press Expo Go
 ## Checks
 
 ```bash
-npm test          # 18 unit and database tests (Node's built-in test runner and SQLite)
+npm test          # 19 unit and database tests (Node's built-in test runner and SQLite)
+npm run typecheck # TypeScript (tsc --noEmit)
 npm run lint      # ESLint with eslint-config-expo
 npx expo-doctor   # dependency and config checks
 npx expo export --platform android   # proves the whole app bundles
@@ -123,7 +125,7 @@ These need a real phone (or emulator) and cannot be covered by automated tests:
 9. **PDF:** share a saved page with photos, and open the PDF to check the images appear.
 10. **Inactivity lock:** leave the app for 3 minutes, or press *Lock now*. Confirm the half-written page is still there after unlocking.
 11. **Offline:** turn on Airplane mode, restart the app, and repeat steps 3, 6 and 7.
-12. **Login speed:** note how long login takes. The PIN hash uses 4,000 PBKDF2 iterations in pure JavaScript (see `src/utils/constants.js`).
+12. **Login speed:** note how long login takes. The PIN hash uses 4,000 PBKDF2 iterations in pure JavaScript (see `src/utils/constants.ts`).
 
 ---
 
@@ -137,14 +139,29 @@ src/
     (tabs)/            Dashboard (index), Notebook, New page
     page/[id].js       Page detail
     edit/[id].js       Continue editing a draft
-  screens/             Screen components (UI and screen logic)
-  components/          Reusable UI: AppButton, TextField, ChipGroup, PhotoGrid, PageCard, StateViews, Screen, theme
-  database/            Schema, migrations, seed data, and one repository per table
-  services/            Auth (context and logic), session/SecureStore, photos, location, PDF
-  utils/               Pure functions: validation, dates, query builder, hashing, helpers
+  screens/             Screen components (UI and screen logic)                     [.js]
+  components/          Reusable UI: AppButton, TextField, PageCard, theme, ...      [.tsx, .ts]
+  database/            One repository per table [.ts]; schema, migrations, seed [.js]
+  services/            Auth, session/SecureStore, photos, location, PDF             [.ts, .tsx]
+  utils/               Pure functions: validation, dates, query builder, hashing    [.ts]
+  types.ts             Shared data types: Officer, Page, Photo, Amendment, rows
 tests/                 Node test runner: utils.test.mjs, database.test.mjs
 docs/PROJECT_REPORT.md Architecture, schema, features, security, future work
 ```
+
+### JavaScript and TypeScript
+
+The project mixes both languages on purpose (`allowJs` in `tsconfig.json`):
+
+- **TypeScript** (`.ts`, `.tsx`) where a mistake would spread: the shared data
+  types, database repositories, services, utilities and reusable components.
+  `npm run typecheck` checks these.
+- **JavaScript** (`.js`) where types add little: thin route files, screens,
+  the schema SQL text and seed data, config files, and the tests.
+
+Files that the Node tests import use the full `.ts` extension in their own
+imports (for example `'./dates.ts'`), because Node needs the real file name.
+Other files import without an extension, as usual in Expo.
 
 ## Security limitations (summary)
 

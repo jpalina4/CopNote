@@ -8,7 +8,9 @@
  */
 import * as Location from 'expo-location';
 
-export async function getCurrentCoords() {
+export type CoordsResult = { ok: true; latitude: number; longitude: number } | { ok: false; reason: string };
+
+export async function getCurrentCoords(): Promise<CoordsResult> {
   const { granted } = await Location.requestForegroundPermissionsAsync();
   if (!granted) return { ok: false, reason: 'Location permission denied. Enter the location manually.' };
 
@@ -24,5 +26,5 @@ export async function getCurrentCoords() {
   }
 }
 
-export const formatCoords = (lat, lng) =>
+export const formatCoords = (lat: number | null | undefined, lng: number | null | undefined): string =>
   lat == null || lng == null ? '' : `${lat.toFixed(5)}, ${lng.toFixed(5)}`;

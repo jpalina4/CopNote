@@ -5,13 +5,14 @@
  * binds the values safely, so names or numbers typed by a user can never
  * change the meaning of the SQL.
  */
+import type { Db, NewOfficer, Officer, OfficerRow } from '../types.ts';
 
-export const findOfficerByRegimentalNumber = (db, regimentalNumber) =>
-  db.getFirstAsync('SELECT * FROM officers WHERE regimental_number = ?', [regimentalNumber]);
+export const findOfficerByRegimentalNumber = (db: Db, regimentalNumber: string) =>
+  db.getFirstAsync<OfficerRow>('SELECT * FROM officers WHERE regimental_number = ?', [regimentalNumber]);
 
-export const findOfficerById = (db, id) => db.getFirstAsync('SELECT * FROM officers WHERE id = ?', [id]);
+export const findOfficerById = (db: Db, id: number) => db.getFirstAsync<OfficerRow>('SELECT * FROM officers WHERE id = ?', [id]);
 
-export const insertOfficer = async (db, officer) => {
+export const insertOfficer = async (db: Db, officer: NewOfficer): Promise<number> => {
   const { fullName, regimentalNumber, rank, station, pinHash, pinSalt, pinIterations, createdAt } = officer;
   const result = await db.runAsync(
     `INSERT INTO officers
@@ -22,18 +23,18 @@ export const insertOfficer = async (db, officer) => {
   return result.lastInsertRowId;
 };
 
-export const recordFailedAttempt = (db, id, failedAttempts, lockoutUntil) =>
+export const recordFailedAttempt = (db: Db, id: number, failedAttempts: number, lockoutUntil: string | null) =>
   db.runAsync('UPDATE officers SET failed_attempts = ?, lockout_until = ? WHERE id = ?', [
     failedAttempts,
     lockoutUntil,
     id,
   ]);
 
-export const resetFailedAttempts = (db, id) =>
+export const resetFailedAttempts = (db: Db, id: number) =>
   db.runAsync('UPDATE officers SET failed_attempts = 0, lockout_until = NULL WHERE id = ?', [id]);
 
 /** Strip secrets before an officer object is handed to the UI. */
-export const toPublicOfficer = ({ id, full_name, regimental_number, rank, station, created_at }) => ({
+export const toPublicOfficer = ({ id, full_name, regimental_number, rank, station, created_at }: OfficerRow): Officer => ({
   id,
   fullName: full_name,
   regimentalNumber: regimental_number,

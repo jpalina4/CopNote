@@ -4,12 +4,13 @@
  * Ownership rule: EVERY query includes "officer_id = ?" so an officer can
  * only ever read or change their own pages, even if a page id is guessed.
  */
-import { buildPageQuery } from '../utils/pageQuery.js';
-import { rowToPage } from '../utils/pageHelpers.js';
-import { toTimestamp } from '../utils/dates.js';
+import { buildPageQuery } from '../utils/pageQuery.ts';
+import { rowToPage } from '../utils/pageHelpers.ts';
+import { toTimestamp } from '../utils/dates.ts';
+import type { Db, Page, PageFields, PageFilters, PageRow, SQLValue } from '../types.ts';
 
 /** Field order shared by INSERT and UPDATE so they cannot drift apart. */
-const pageValues = (p) => [
+const pageValues = (p: PageFields): SQLValue[] => [
   p.title.trim(),
   p.incidentDate || null,
   p.incidentTime || null,
@@ -22,14 +23,14 @@ const pageValues = (p) => [
   p.actionTaken?.trim() || null,
 ];
 
-export const listPages = async (db, officerId, filters) => {
+export const listPages = async (db: Db, officerId: number, filters?: PageFilters): Promise<Page[]> => {
   const { sql, params } = buildPageQuery(officerId, filters);
-  const rows = await db.getAllAsync(sql, params);
+  const rows = await db.getAllAsync<PageRow>(sql, params);
   return rows.map(rowToPage); // map: database rows -> app objects
 };
 
-export const getPage = async (db, officerId, pageId) => {
-  const row = await db.getFirstAsync(
+export const getPage = async (db: Db, officerId: number, pageId: number): Promise<Page | null> => {
+  const row = await db.getFirstAsync<PageRow>(
     `SELECT p.*, o.regimental_number, (SELECT COUNT(*) FROM photos WHERE page_id = p.id) AS photo_count
      FROM pages p JOIN officers o ON o.id = p.officer_id
      WHERE p.id = ? AND p.officer_id = ?`,
@@ -38,7 +39,7 @@ export const getPage = async (db, officerId, pageId) => {
   return row ? rowToPage(row) : null;
 };
 
-export const insertDraft = async (db, officerId, page) => {
+export const insertDraft = async (db: Db, officerId: number, page: PageFields): Promise<number> => {
   const now = toTimestamp();
   const result = await db.runAsync(
     `INSERT INTO pages
@@ -50,7 +51,7 @@ export const insertDraft = async (db, officerId, page) => {
   return result.lastInsertRowId;
 };
 
-export const updateDraft = async (db, officerId, pageId, page) => {
+export const updateDraft = async (db: Db, officerId: number, pageId: number, page: PageFields): Promise<void> => {
   const result = await db.runAsync(
     `UPDATE pages SET
        title = ?, incident_date = ?, incident_time = ?, location = ?, latitude = ?, longitude = ?,
@@ -70,7 +71,7 @@ export const updateDraft = async (db, officerId, pageId, page) => {
  * looks like a page was removed. Numbering only locked pages keeps the
  * sequence continuous, like a bound paper notebook.
  */
-export const lockPage = async (db, officerId, pageId) => {
+export const lockPage = async (db: Db, officerId: number, pageId: number): Promise<number> => {
   const now = toTimestamp();
   const result = await db.runAsync(
     `UPDATE pages SET
@@ -81,12 +82,12 @@ export const lockPage = async (db, officerId, pageId) => {
     [officerId, now, now, pageId, officerId],
   );
   if (result.changes !== 1) throw new Error('This page could not be saved. It may already be locked.');
-  const { page_number } = await db.getFirstAsync('SELECT page_number FROM pages WHERE id = ?', [pageId]);
-  return page_number;
+  const row = await db.getFirstAsync<{ page_number: number }>('SELECT page_number FROM pages WHERE id = ?', [pageId]);
+  return row!.page_number; // just set by the UPDATE above
 };
 
 /** Only drafts can be deleted (also enforced by a database trigger). */
-export const deleteDraft = async (db, officerId, pageId) => {
+export const deleteDraft = async (db: Db, officerId: number, pageId: number): Promise<boolean> => {
   const result = await db.runAsync("DELETE FROM pages WHERE id = ? AND officer_id = ? AND status = 'draft'", [
     pageId,
     officerId,

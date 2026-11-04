@@ -6,7 +6,19 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, MIN_TOUCH, radius, spacing, type } from './theme';
 
-export default function ChipGroup({ label, options, value, onChange, error, allowClear = false, required = false }) {
+export type ChipOption = string | { value: string; label: string };
+
+interface ChipGroupProps {
+  label?: string;
+  options: ChipOption[];
+  value: string;
+  onChange: (value: string) => void;
+  error?: string;
+  allowClear?: boolean;
+  required?: boolean;
+}
+
+export default function ChipGroup({ label, options, value, onChange, error, allowClear = false, required = false }: ChipGroupProps) {
   return (
     <View style={styles.wrapper} accessibilityRole="radiogroup" accessibilityLabel={label}>
       {label ? (

@@ -16,14 +16,14 @@ import { bytesToHex } from '../utils/hash';
 const SESSION_KEY = 'copnote.session.officerId';
 const PEPPER_KEY = 'copnote.pinPepper';
 
-let cachedPepper = null;
+let cachedPepper: string | null = null;
 
 /**
  * The device's secret PIN "pepper" (see utils/hash.js). Created once on
  * first use and kept in the OS keystore, never in SQLite. If SecureStore is
  * unavailable (e.g. web) we fall back to an empty pepper.
  */
-export async function getPinPepper() {
+export async function getPinPepper(): Promise<string> {
   if (cachedPepper !== null) return cachedPepper;
   try {
     let pepper = await SecureStore.getItemAsync(PEPPER_KEY);
@@ -38,7 +38,7 @@ export async function getPinPepper() {
   return cachedPepper;
 }
 
-export async function saveSession(officerId) {
+export async function saveSession(officerId: number): Promise<void> {
   try {
     await SecureStore.setItemAsync(SESSION_KEY, String(officerId));
   } catch {
@@ -46,7 +46,7 @@ export async function saveSession(officerId) {
   }
 }
 
-export async function loadSession() {
+export async function loadSession(): Promise<number | null> {
   try {
     const value = await SecureStore.getItemAsync(SESSION_KEY);
     return value ? Number(value) : null;
@@ -55,7 +55,7 @@ export async function loadSession() {
   }
 }
 
-export async function clearSession() {
+export async function clearSession(): Promise<void> {
   try {
     await SecureStore.deleteItemAsync(SESSION_KEY);
   } catch {

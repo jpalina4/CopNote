@@ -5,7 +5,7 @@
  * type, or a longer inactivity timeout) is made in exactly one place.
  */
 
-export const INCIDENT_TYPES = [
+export const INCIDENT_TYPES: string[] = [
   'Theft',
   'Assault',
   'Traffic accident',
@@ -19,7 +19,7 @@ export const PAGE_STATUS = Object.freeze({
   SAVED: 'saved',
 });
 
-export const RANKS = [
+export const RANKS: string[] = [
   'Constable',
   'Senior Constable',
   'First Constable',

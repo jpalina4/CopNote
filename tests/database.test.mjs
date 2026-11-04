@@ -8,10 +8,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { DatabaseSync } from 'node:sqlite';
 import { SCHEMA_V1 } from '../src/database/schemaSql.js';
-import { insertOfficer } from '../src/database/officerRepo.js';
-import { insertDraft, updateDraft, lockPage, deleteDraft, getPage, listPages } from '../src/database/pageRepo.js';
-import { insertPhoto, deletePhoto, listPhotos } from '../src/database/photoRepo.js';
-import { insertAmendment, listAmendments } from '../src/database/amendmentRepo.js';
+import { insertOfficer } from '../src/database/officerRepo.ts';
+import { insertDraft, updateDraft, lockPage, deleteDraft, getPage, listPages } from '../src/database/pageRepo.ts';
+import { insertPhoto, deletePhoto, listPhotos } from '../src/database/photoRepo.ts';
+import { insertAmendment, listAmendments } from '../src/database/amendmentRepo.ts';
 
 /** Minimal expo-sqlite look-alike. */
 function makeDb() {

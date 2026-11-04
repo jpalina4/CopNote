@@ -6,6 +6,8 @@
  * Black is the primary colour (headers, buttons) rather than red, so brand red
  * is never mistaken for `danger` red on delete buttons and errors.
  */
+import type { TextStyle } from 'react-native';
+
 export const colors = {
   primary: '#1A1A1A',
   primaryDark: '#000000',
@@ -30,7 +32,7 @@ export const radius = { sm: 6, md: 10, lg: 16 };
 
 export const MIN_TOUCH = 48;
 
-export const type = {
+export const type: Record<'title' | 'heading' | 'body' | 'label' | 'small', TextStyle> = {
   title: { fontSize: 24, fontWeight: '700', color: colors.text },
   heading: { fontSize: 18, fontWeight: '700', color: colors.text },
   body: { fontSize: 16, color: colors.text },

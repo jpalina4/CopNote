@@ -20,9 +20,11 @@ import {
   resetFailedAttempts,
   toPublicOfficer,
 } from '../database/officerRepo';
+import type { Db, Officer, OfficerRow, PinRecord } from '../types';
+import type { LoginInput, RegistrationInput } from '../utils/validation';
 
 /** Generate a random 16-byte salt and hash the PIN with it (plus the device pepper). */
-export const createPinRecord = async (pin) => {
+export const createPinRecord = async (pin: string): Promise<PinRecord> => {
   const pinSalt = bytesToHex(Crypto.getRandomBytes(16));
   const pinHash = await hashPin(pin, pinSalt, PBKDF2_ITERATIONS, await getPinPepper());
   return { pinHash, pinSalt, pinIterations: PBKDF2_ITERATIONS };
@@ -30,7 +32,10 @@ export const createPinRecord = async (pin) => {
 
 export class AuthError extends Error {}
 
-export async function registerOfficer(db, { fullName, regimentalNumber, rank, station, pin }) {
+export async function registerOfficer(
+  db: Db,
+  { fullName, regimentalNumber, rank, station, pin }: Omit<RegistrationInput, 'confirmPin'>,
+): Promise<Officer> {
   const regNo = normaliseRegimentalNumber(regimentalNumber);
   if (await findOfficerByRegimentalNumber(db, regNo)) {
     throw new AuthError('An officer with this regimental number is already registered on this device.');
@@ -44,14 +49,16 @@ export async function registerOfficer(db, { fullName, regimentalNumber, rank, st
     ...pinRecord,
     createdAt: toTimestamp(),
   });
-  return toPublicOfficer(await findOfficerById(db, id));
+  const row = await findOfficerById(db, id);
+  if (!row) throw new AuthError('Registration failed. Please try again.');
+  return toPublicOfficer(row);
 }
 
 /**
  * Shared PIN check with brute-force protection: after MAX_FAILED_ATTEMPTS
  * wrong PINs the account is locked for LOCKOUT_MINUTES.
  */
-async function checkPin(db, officerRow, pin) {
+async function checkPin(db: Db, officerRow: OfficerRow, pin: string): Promise<Officer> {
   const now = new Date();
   if (officerRow.lockout_until && officerRow.lockout_until > toTimestamp(now)) {
     throw new AuthError(`Too many wrong attempts. Try again after ${officerRow.lockout_until.slice(11, 16)}.`);
@@ -73,7 +80,7 @@ async function checkPin(db, officerRow, pin) {
   );
 }
 
-export async function login(db, { regimentalNumber, pin }) {
+export async function login(db: Db, { regimentalNumber, pin }: LoginInput): Promise<Officer> {
   const row = await findOfficerByRegimentalNumber(db, normaliseRegimentalNumber(regimentalNumber));
   // Same message whether the number or the PIN was wrong, so the app does
   // not reveal which regimental numbers are registered.
@@ -82,13 +89,13 @@ export async function login(db, { regimentalNumber, pin }) {
 }
 
 /** Used by the lock screen: the officer is known, only the PIN is asked for. */
-export async function unlock(db, officerId, pin) {
+export async function unlock(db: Db, officerId: number, pin: string): Promise<Officer> {
   const row = await findOfficerById(db, officerId);
   if (!row) throw new AuthError('Officer account not found.');
   return checkPin(db, row, pin);
 }
 
-export const getOfficer = async (db, id) => {
+export const getOfficer = async (db: Db, id: number): Promise<Officer | null> => {
   const row = await findOfficerById(db, id);
   return row ? toPublicOfficer(row) : null;
 };

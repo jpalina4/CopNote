@@ -2,11 +2,20 @@
  * Standard scrollable screen container: safe-area padding, background colour,
  * and keyboard avoidance so inputs are not hidden behind the keyboard.
  */
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import type { ComponentProps, ReactNode } from 'react';
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
+import { SafeAreaView, type Edge } from 'react-native-safe-area-context';
 import { colors, spacing } from './theme';
 
-export default function Screen({ children, scroll = true, edges = ['bottom'], contentStyle, scrollRef }) {
+interface ScreenProps {
+  children: ReactNode;
+  scroll?: boolean;
+  edges?: Edge[];
+  contentStyle?: StyleProp<ViewStyle>;
+  scrollRef?: ComponentProps<typeof ScrollView>['ref'];
+}
+
+export default function Screen({ children, scroll = true, edges = ['bottom'], contentStyle, scrollRef }: ScreenProps) {
   const content = scroll ? (
     <ScrollView ref={scrollRef} contentContainerStyle={[styles.content, contentStyle]} keyboardShouldPersistTaps="handled">
       {children}

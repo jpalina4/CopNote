@@ -11,18 +11,35 @@
  * When locked, the officer stays signed in (their unsaved form is kept) but
  * the lock screen covers everything until the correct PIN is entered.
  */
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { AppState } from 'react-native';
 import { useSQLiteContext } from 'expo-sqlite';
 import * as authService from './authService';
 import { clearSession, loadSession, saveSession } from './sessionStore';
 import { INACTIVITY_TIMEOUT_MS } from '../utils/constants';
+import type { Officer } from '../types';
+import type { LoginInput, RegistrationInput } from '../utils/validation';
 
-const AuthContext = createContext(null);
+export interface AuthContextValue {
+  officer: Officer | null;
+  locked: boolean;
+  restoring: boolean;
+  login: (credentials: LoginInput) => Promise<void>;
+  register: (details: Omit<RegistrationInput, 'confirmPin'>) => Promise<void>;
+  unlock: (pin: string) => Promise<void>;
+  logout: () => Promise<void>;
+  lockNow: () => void;
+  reportActivity: () => void;
+}
 
-export function AuthProvider({ children }) {
+/** What screens get from useAuth(): only used while signed in, so officer is never null. */
+export type SignedInAuth = AuthContextValue & { officer: Officer };
+
+const AuthContext = createContext<AuthContextValue | null>(null);
+
+export function AuthProvider({ children }: { children: ReactNode }) {
   const db = useSQLiteContext();
-  const [officer, setOfficer] = useState(null);
+  const [officer, setOfficer] = useState<Officer | null>(null);
   const [locked, setLocked] = useState(false);
   const [restoring, setRestoring] = useState(true);
 
@@ -48,19 +65,20 @@ export function AuthProvider({ children }) {
     lastActivity.current = Date.now();
   }, []);
 
-  const startSession = useCallback(async (signedIn) => {
+  const startSession = useCallback(async (signedIn: Officer) => {
     await saveSession(signedIn.id);
     lastActivity.current = Date.now();
     setOfficer(signedIn);
     setLocked(false);
   }, []);
 
-  const login = useCallback(async (credentials) => startSession(await authService.login(db, credentials)), [db, startSession]);
+  const login = useCallback(async (credentials: LoginInput) => startSession(await authService.login(db, credentials)), [db, startSession]);
 
-  const register = useCallback(async (details) => startSession(await authService.registerOfficer(db, details)), [db, startSession]);
+  const register = useCallback(async (details: Omit<RegistrationInput, 'confirmPin'>) => startSession(await authService.registerOfficer(db, details)), [db, startSession]);
 
   const unlock = useCallback(
-    async (pin) => {
+    async (pin: string) => {
+      if (!officer) return;
       await authService.unlock(db, officer.id, pin); // throws on a wrong PIN
       lastActivity.current = Date.now();
       setLocked(false);
@@ -94,7 +112,7 @@ export function AuthProvider({ children }) {
 
   // useMemo keeps the same object between renders unless something changed,
   // so components using the context do not re-render needlessly.
-  const value = useMemo(
+  const value = useMemo<AuthContextValue>(
     () => ({ officer, locked, restoring, login, register, unlock, logout, lockNow, reportActivity }),
     [officer, locked, restoring, login, register, unlock, logout, lockNow, reportActivity],
   );
@@ -102,12 +120,17 @@ export function AuthProvider({ children }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-/** Custom hook: a short, safe way for screens to use the auth context. */
-export function useAuth() {
+/**
+ * Custom hook: a short, safe way for screens to use the auth context.
+ * Typed as signed in for convenience, because most callers are protected
+ * screens. Anything that can run while signed out (root layout, login,
+ * register) must check `officer` before using it.
+ */
+export function useAuth(): SignedInAuth {
   const context = useContext(AuthContext);
   if (!context) throw new Error('useAuth must be used inside <AuthProvider>');
-  return context;
+  return context as SignedInAuth;
 }
 
 /** Like useAuth, but returns null outside the provider (used by shared components). */
-export const useOptionalAuth = () => useContext(AuthContext);
+export const useOptionalAuth = (): AuthContextValue | null => useContext(AuthContext);

@@ -6,7 +6,7 @@
  */
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { isValidDate, isValidTime, formatDate } from '../src/utils/dates.js';
+import { isValidDate, isValidTime, formatDate } from '../src/utils/dates.ts';
 import {
   validateRegistration,
   validateLogin,
@@ -14,10 +14,10 @@ import {
   normaliseRegimentalNumber,
   isValidRegimentalNumber,
   hasErrors,
-} from '../src/utils/validation.js';
-import { buildPageQuery } from '../src/utils/pageQuery.js';
-import { summarisePages, removeAt, updateField, escapeHtml, pageLabel, formatSerial } from '../src/utils/pageHelpers.js';
-import { hashPin, safeEqual, verifyPin } from '../src/utils/hash.js';
+} from '../src/utils/validation.ts';
+import { buildPageQuery } from '../src/utils/pageQuery.ts';
+import { summarisePages, removeAt, updateField, escapeHtml, pageLabel, formatSerial } from '../src/utils/pageHelpers.ts';
+import { hashPin, safeEqual, verifyPin } from '../src/utils/hash.ts';
 
 test('dates: validation rejects impossible values', () => {
   assert.equal(isValidDate('2026-11-01'), true);
