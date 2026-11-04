@@ -39,6 +39,7 @@ export interface OfficerRow {
   pin_iterations: number;
   failed_attempts: number;
   lockout_until: string | null;
+  photo_uri: string | null;
   created_at: string;
 }
 
@@ -49,6 +50,8 @@ export interface Officer {
   regimentalNumber: string;
   rank: string;
   station: string;
+  /** Profile picture; null until the officer chooses one. */
+  photoUri: string | null;
   createdAt: string;
 }
 

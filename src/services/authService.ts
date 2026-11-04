@@ -12,6 +12,7 @@ import { bytesToHex, hashPin, verifyPin } from '../utils/hash';
 import { toTimestamp } from '../utils/dates';
 import { normaliseRegimentalNumber } from '../utils/validation';
 import { getPinPepper } from './sessionStore';
+import { deletePhotoFile, persistPhoto } from './photoService';
 import {
   findOfficerById,
   findOfficerByRegimentalNumber,
@@ -19,6 +20,7 @@ import {
   recordFailedAttempt,
   resetFailedAttempts,
   toPublicOfficer,
+  updateOfficerPhoto,
 } from '../database/officerRepo';
 import type { Db, Officer, OfficerRow, PinRecord } from '../types';
 import type { LoginInput, RegistrationInput } from '../utils/validation';
@@ -93,6 +95,22 @@ export async function unlock(db: Db, officerId: number, pin: string): Promise<Of
   const row = await findOfficerById(db, officerId);
   if (!row) throw new AuthError('Officer account not found.');
   return checkPin(db, row, pin);
+}
+
+/**
+ * Replace the officer's profile picture. Same order as page photos: copy the
+ * file first, then update the database, and only then remove the old file.
+ */
+export async function changeProfilePhoto(db: Db, officer: Officer, tempUri: string): Promise<Officer> {
+  const photoUri = await persistPhoto(tempUri);
+  try {
+    await updateOfficerPhoto(db, officer.id, photoUri);
+  } catch (e) {
+    deletePhotoFile(photoUri);
+    throw e;
+  }
+  if (officer.photoUri) deletePhotoFile(officer.photoUri);
+  return { ...officer, photoUri };
 }
 
 export const getOfficer = async (db: Db, id: number): Promise<Officer | null> => {

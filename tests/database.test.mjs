@@ -7,8 +7,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { DatabaseSync } from 'node:sqlite';
-import { SCHEMA_V1 } from '../src/database/schemaSql.js';
-import { insertOfficer } from '../src/database/officerRepo.ts';
+import { SCHEMA_V1, SCHEMA_V2 } from '../src/database/schemaSql.js';
+import { findOfficerById, insertOfficer, toPublicOfficer, updateOfficerPhoto } from '../src/database/officerRepo.ts';
 import { insertDraft, updateDraft, lockPage, deleteDraft, getPage, listPages } from '../src/database/pageRepo.ts';
 import { insertPhoto, deletePhoto, listPhotos } from '../src/database/photoRepo.ts';
 import { insertAmendment, listAmendments } from '../src/database/amendmentRepo.ts';
@@ -53,10 +53,29 @@ async function setup() {
   const db = makeDb();
   await db.execAsync('PRAGMA foreign_keys = ON;');
   await db.execAsync(SCHEMA_V1);
+  await db.execAsync(SCHEMA_V2);
   const a = await insertOfficer(db, officer('10001'));
   const b = await insertOfficer(db, officer('10002'));
   return { db, a, b };
 }
+
+test('upgrading to schema v2 keeps existing officers and adds an empty profile picture', async () => {
+  const db = makeDb();
+  await db.execAsync(SCHEMA_V1);
+  const id = await insertOfficer(db, officer('10001'));
+  await db.execAsync(SCHEMA_V2);
+  const row = await findOfficerById(db, id);
+  assert.equal(row.regimental_number, '10001');
+  assert.equal(toPublicOfficer(row).photoUri, null);
+});
+
+test('a profile picture is saved for that officer only', async () => {
+  const { db, a, b } = await setup();
+  await updateOfficerPhoto(db, a, 'file:///photos/me.jpg');
+  assert.equal(toPublicOfficer(await findOfficerById(db, a)).photoUri, 'file:///photos/me.jpg');
+  assert.equal(toPublicOfficer(await findOfficerById(db, b)).photoUri, null);
+  await assert.rejects(updateOfficerPhoto(db, 9999, 'file:///photos/x.jpg'), /could not be saved/);
+});
 
 test('regimental numbers are unique', async () => {
   const { db } = await setup();

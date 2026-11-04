@@ -106,7 +106,7 @@ To reset the demo data, clear Expo Go's app data. On Android, long-press Expo Go
 ## Checks
 
 ```bash
-npm test          # 19 unit and database tests (Node's built-in test runner and SQLite)
+npm test          # 22 unit and database tests (Node's built-in test runner and SQLite)
 npm run typecheck # TypeScript (tsc --noEmit)
 npm run lint      # ESLint with eslint-config-expo
 npx expo-doctor   # dependency and config checks

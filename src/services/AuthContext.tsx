@@ -26,6 +26,7 @@ export interface AuthContextValue {
   restoring: boolean;
   login: (credentials: LoginInput) => Promise<void>;
   register: (details: Omit<RegistrationInput, 'confirmPin'>) => Promise<void>;
+  changePhoto: (tempUri: string) => Promise<void>;
   unlock: (pin: string) => Promise<void>;
   logout: () => Promise<void>;
   lockNow: () => void;
@@ -86,6 +87,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [db, officer],
   );
 
+  const changePhoto = useCallback(
+    async (tempUri: string) => {
+      if (officer) setOfficer(await authService.changeProfilePhoto(db, officer, tempUri));
+    },
+    [db, officer],
+  );
+
   const logout = useCallback(async () => {
     await clearSession();
     setLocked(false);
@@ -121,8 +129,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // useMemo keeps the same object between renders unless something changed,
   // so components using the context do not re-render needlessly.
   const value = useMemo<AuthContextValue>(
-    () => ({ officer, locked, restoring, login, register, unlock, logout, lockNow, reportActivity }),
-    [officer, locked, restoring, login, register, unlock, logout, lockNow, reportActivity],
+    () => ({ officer, locked, restoring, login, register, changePhoto, unlock, logout, lockNow, reportActivity }),
+    [officer, locked, restoring, login, register, changePhoto, unlock, logout, lockNow, reportActivity],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

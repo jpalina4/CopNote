@@ -8,11 +8,13 @@ import { router, useFocusEffect } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import AppButton from '../components/AppButton';
 import PageCard from '../components/PageCard';
+import ProfileAvatar from '../components/ProfileAvatar';
 import Screen from '../components/Screen';
 import { Banner, EmptyState, LoadingView } from '../components/StateViews';
 import { colors, radius, spacing, type } from '../components/theme';
 import { useAuth } from '../services/AuthContext';
 import { confirmAction } from '../services/dialogs';
+import { pickFromGallery } from '../services/photoService';
 import { listPages } from '../database/pageRepo';
 import { formatDate, toDateString } from '../utils/dates';
 import { summarisePages } from '../utils/pageHelpers';
@@ -28,9 +30,11 @@ function StatCard({ label, value, tone = colors.primary }) {
 
 export default function DashboardScreen() {
   const db = useSQLiteContext();
-  const { officer, logout, lockNow } = useAuth();
+  const { officer, changePhoto, logout, lockNow } = useAuth();
   const [pages, setPages] = useState(null); // null = still loading
   const [error, setError] = useState('');
+  const [photoError, setPhotoError] = useState('');
+  const [photoBusy, setPhotoBusy] = useState(false);
 
   // useFocusEffect re-runs each time this tab is shown, so the numbers are
   // fresh after saving a page on another tab.
@@ -45,6 +49,19 @@ export default function DashboardScreen() {
       };
     }, [db, officer.id]),
   );
+
+  const choosePhoto = async () => {
+    setPhotoError('');
+    setPhotoBusy(true);
+    try {
+      const [uri] = await pickFromGallery(1);
+      if (uri) await changePhoto(uri);
+    } catch (e) {
+      setPhotoError(e.message);
+    } finally {
+      setPhotoBusy(false);
+    }
+  };
 
   const confirmLogout = () =>
     confirmAction({
@@ -68,6 +85,8 @@ export default function DashboardScreen() {
 
   return (
     <Screen>
+      <Banner message={photoError} />
+      <ProfileAvatar name={officer.fullName} uri={officer.photoUri} onPress={choosePhoto} busy={photoBusy} />
       <Text style={type.small}>{formatDate(toDateString())}</Text>
       <Text style={type.title}>
         Welcome, {officer.rank} {officer.fullName.split(' ')[0]}

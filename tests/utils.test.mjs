@@ -18,6 +18,7 @@ import {
 import { buildPageQuery } from '../src/utils/pageQuery.ts';
 import { summarisePages, removeAt, updateField, escapeHtml, pageLabel, formatSerial } from '../src/utils/pageHelpers.ts';
 import { hashPin, safeEqual, verifyPin } from '../src/utils/hash.ts';
+import { initials } from '../src/utils/officerHelpers.ts';
 
 test('dates: validation rejects impossible values', () => {
   assert.equal(isValidDate('2026-11-01'), true);
@@ -93,6 +94,13 @@ test('immutable helpers do not modify their input', () => {
   const page = Object.freeze({ title: 'x' });
   assert.deepEqual(updateField(page, 'title', 'y'), { title: 'y' });
   assert.equal(page.title, 'x');
+});
+
+test('initials use the first and last names', () => {
+  assert.equal(initials('Joseph Tau'), 'JT');
+  assert.equal(initials('  mary  anne   kila '), 'MK');
+  assert.equal(initials('Grace'), 'G');
+  assert.equal(initials(''), '');
 });
 
 test('pageLabel and escapeHtml', () => {

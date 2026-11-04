@@ -82,3 +82,8 @@ export const SCHEMA_V1 = `
       BEFORE UPDATE ON amendments
       BEGIN SELECT RAISE(ABORT, 'Amendments cannot be changed.'); END;
 `;
+
+/** Schema version 2: the officer's optional profile picture (a file path, or a data: URI in a browser). */
+export const SCHEMA_V2 = `
+      ALTER TABLE officers ADD COLUMN photo_uri TEXT;
+`;

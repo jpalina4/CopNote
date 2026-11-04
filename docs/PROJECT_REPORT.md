@@ -98,6 +98,7 @@ officers 1 ───< pages 1 ───< photos
 | full_name, rank, station | TEXT | |
 | regimental_number | TEXT **UNIQUE** | Normalised to upper case |
 | pin_hash, pin_salt, pin_iterations | TEXT/INT | PBKDF2 output, random salt, work factor. **No PIN is stored.** |
+| photo_uri | TEXT, nullable | Profile picture chosen on the dashboard (added in schema version 2). |
 | failed_attempts, lockout_until | INT/TEXT | Brute-force protection |
 | created_at | TEXT | |
 
@@ -178,7 +179,7 @@ officers 1 ───< pages 1 ───< photos
 
 | Check | Result |
 |---|---|
-| `npm test`: 19 automated tests | All pass |
+| `npm test`: 22 automated tests | All pass |
 | `npm run typecheck` (TypeScript, strict mode) | No errors |
 | `npm run lint` (ESLint, eslint-config-expo, React Compiler rules) | No problems |
 | `npx expo-doctor` | 20/20 checks pass |

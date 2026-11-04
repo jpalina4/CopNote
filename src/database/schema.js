@@ -20,9 +20,9 @@
  * they have not yet seen, so officers keep their data on app updates.
  */
 import { seedDatabase } from './seed';
-import { SCHEMA_V1 } from './schemaSql.js';
+import { SCHEMA_V1, SCHEMA_V2 } from './schemaSql.js';
 
-const DATABASE_VERSION = 1;
+const DATABASE_VERSION = 2;
 
 export const DATABASE_NAME = 'copnote.db';
 
@@ -42,7 +42,9 @@ export async function migrateDbIfNeeded(db) {
     await seedDatabase(db);
   }
 
-  // Future example:  if (currentVersion < 2) { await db.execAsync('ALTER TABLE pages ADD COLUMN ...'); }
+  if (currentVersion < 2) {
+    await db.execAsync(SCHEMA_V2);
+  }
 
   // PRAGMA does not accept "?" parameters; DATABASE_VERSION is our own constant, not user input.
   await db.execAsync(`PRAGMA user_version = ${DATABASE_VERSION}`);

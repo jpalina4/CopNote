@@ -33,12 +33,18 @@ export const recordFailedAttempt = (db: Db, id: number, failedAttempts: number, 
 export const resetFailedAttempts = (db: Db, id: number) =>
   db.runAsync('UPDATE officers SET failed_attempts = 0, lockout_until = NULL WHERE id = ?', [id]);
 
+export const updateOfficerPhoto = async (db: Db, id: number, photoUri: string): Promise<void> => {
+  const result = await db.runAsync('UPDATE officers SET photo_uri = ? WHERE id = ?', [photoUri, id]);
+  if (result.changes !== 1) throw new Error('The profile picture could not be saved.');
+};
+
 /** Strip secrets before an officer object is handed to the UI. */
-export const toPublicOfficer = ({ id, full_name, regimental_number, rank, station, created_at }: OfficerRow): Officer => ({
+export const toPublicOfficer = ({ id, full_name, regimental_number, rank, station, photo_uri, created_at }: OfficerRow): Officer => ({
   id,
   fullName: full_name,
   regimentalNumber: regimental_number,
   rank,
   station,
+  photoUri: photo_uri ?? null,
   createdAt: created_at,
 });
