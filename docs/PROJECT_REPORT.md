@@ -179,7 +179,7 @@ officers 1 ───< pages 1 ───< photos
 
 | Check | Result |
 |---|---|
-| `npm test`: 22 automated tests | All pass |
+| `npm test`: 24 automated tests | All pass |
 | `npm run typecheck` (TypeScript, strict mode) | No errors |
 | `npm run lint` (ESLint, eslint-config-expo, React Compiler rules) | No problems |
 | `npx expo-doctor` | 20/20 checks pass |

@@ -87,3 +87,15 @@ export const SCHEMA_V1 = `
 export const SCHEMA_V2 = `
       ALTER TABLE officers ADD COLUMN photo_uri TEXT;
 `;
+
+/**
+ * Schema version 3: renames the first demo officer on databases that were
+ * already seeded. Skipped if that account has gone, or if 16237 is already
+ * registered on this device, because regimental numbers must stay unique.
+ */
+export const SCHEMA_V3 = `
+      UPDATE officers
+      SET full_name = 'Johnson PALINA', regimental_number = '16237', rank = 'Constable'
+      WHERE regimental_number = '10452' AND full_name = 'Joseph Tau'
+        AND NOT EXISTS (SELECT 1 FROM officers WHERE regimental_number = '16237');
+`;

@@ -87,8 +87,8 @@ export default function LoginScreen() {
       </View>
 
       <View style={styles.demo}>
-        <Text style={[type.small, styles.demoTitle]}>Demo accounts (fictional)</Text>
-        <Text style={type.small}>10452 · PIN 2580 — Snr Const. Joseph Tau</Text>
+        <Text style={[type.small, styles.demoTitle]}>Demo accounts</Text>
+        <Text style={type.small}>16237 · PIN 2580 — Const. Johnson PALINA</Text>
         <Text style={type.small}>RPNGC-7731 · PIN 1357 — Sgt Grace Waim</Text>
       </View>
     </Screen>

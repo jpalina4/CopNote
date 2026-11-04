@@ -5,7 +5,7 @@ paper pocket notebook: officers log in, record daily incidents with supporting
 photos, and save each page. A saved page is **locked** and a new blank page
 opens, just like turning to a new page in a bound notebook.
 
-> All officers, people and incidents in the sample data are **fictional**.
+> The first demo account uses the project author's name, rank and regimental number. All other officers, people and incidents in the sample data are **fictional**.
 > This is a student project, not an official Royal PNG Constabulary system.
 
 ---
@@ -90,13 +90,13 @@ After changing `app.json`, or if you see strange caching errors, run `npx expo s
 
 The web version is for demonstrating and reviewing the app. The phone app has the stronger PIN protection.
 
-## Demo accounts (fictional)
+## Demo accounts
 
 The database is created and seeded the first time the app opens.
 
 | Regimental no. | PIN | Officer |
 |---|---|---|
-| `10452` | `2580` | Senior Constable Joseph Tau, Boroko Police Station (3 saved pages, 1 draft, 1 amendment) |
+| `16237` | `2580` | Constable Johnson PALINA, Boroko Police Station (3 saved pages, 1 draft, 1 amendment) |
 | `RPNGC-7731` | `1357` | Sergeant Grace Waim, Lae Top Town Police Station (1 saved page) |
 
 To reset the demo data, clear Expo Go's app data. On Android, long-press Expo Go, then *App info → Storage → Clear data*. On iPhone, delete and reinstall Expo Go. Note that this also removes data for any other projects opened in Expo Go.
@@ -106,7 +106,7 @@ To reset the demo data, clear Expo Go's app data. On Android, long-press Expo Go
 ## Checks
 
 ```bash
-npm test          # 22 unit and database tests (Node's built-in test runner and SQLite)
+npm test          # 24 unit and database tests (Node's built-in test runner and SQLite)
 npm run typecheck # TypeScript (tsc --noEmit)
 npm run lint      # ESLint with eslint-config-expo
 npx expo-doctor   # dependency and config checks

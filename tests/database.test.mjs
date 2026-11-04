@@ -7,7 +7,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { DatabaseSync } from 'node:sqlite';
-import { SCHEMA_V1, SCHEMA_V2 } from '../src/database/schemaSql.js';
+import { SCHEMA_V1, SCHEMA_V2, SCHEMA_V3 } from '../src/database/schemaSql.js';
 import { findOfficerById, insertOfficer, toPublicOfficer, updateOfficerPhoto } from '../src/database/officerRepo.ts';
 import { insertDraft, updateDraft, lockPage, deleteDraft, getPage, listPages } from '../src/database/pageRepo.ts';
 import { insertPhoto, deletePhoto, listPhotos } from '../src/database/photoRepo.ts';
@@ -67,6 +67,38 @@ test('upgrading to schema v2 keeps existing officers and adds an empty profile p
   const row = await findOfficerById(db, id);
   assert.equal(row.regimental_number, '10001');
   assert.equal(toPublicOfficer(row).photoUri, null);
+});
+
+test('schema v3 renames the old demo officer and keeps their pages', async () => {
+  const db = makeDb();
+  await db.execAsync(SCHEMA_V1);
+  await db.execAsync(SCHEMA_V2);
+  const id = await insertOfficer(db, { ...officer('10452'), fullName: 'Joseph Tau', rank: 'Senior Constable' });
+  const pageId = await insertDraft(db, id, completePage);
+  await lockPage(db, id, pageId);
+
+  await db.execAsync(SCHEMA_V3);
+
+  const row = await findOfficerById(db, id);
+  assert.equal(row.full_name, 'Johnson PALINA');
+  assert.equal(row.rank, 'Constable');
+  assert.equal(row.regimental_number, '16237');
+  assert.equal((await getPage(db, id, pageId)).serialNumber, '16237-000001');
+});
+
+test('schema v3 leaves other officers alone and never duplicates 16237', async () => {
+  const db = makeDb();
+  await db.execAsync(SCHEMA_V1);
+  await db.execAsync(SCHEMA_V2);
+  const demo = await insertOfficer(db, { ...officer('10452'), fullName: 'Joseph Tau' });
+  const registered = await insertOfficer(db, officer('16237'));
+  const other = await insertOfficer(db, { ...officer('20000'), fullName: 'Kila Morea' });
+
+  await db.execAsync(SCHEMA_V3);
+
+  assert.equal((await findOfficerById(db, demo)).regimental_number, '10452');
+  assert.equal((await findOfficerById(db, registered)).full_name, 'Test Officer');
+  assert.equal((await findOfficerById(db, other)).full_name, 'Kila Morea');
 });
 
 test('a profile picture is saved for that officer only', async () => {

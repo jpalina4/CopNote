@@ -1,12 +1,13 @@
 /**
  * Sample data for demonstration, inserted once when the database is created.
  *
- * ALL people, officers and incidents are FICTIONAL. Place names are real
+ * The first account uses the project author's name, rank and regimental
+ * number. All other people, officers and incidents are FICTIONAL. Place names are real
  * PNG suburbs and towns so the examples feel realistic, but no real case is
  * described.
  *
  * Demo logins (shown on the login screen):
- *   Regimental no. 10452       PIN 2580  — Senior Constable Joseph Tau, Boroko
+ *   Regimental no. 16237       PIN 2580  — Constable Johnson PALINA, Boroko
  *   Regimental no. RPNGC-7731  PIN 1357  — Sergeant Grace Waim, Lae (Top Town)
  */
 import { createPinRecord } from '../services/authService';
@@ -14,7 +15,7 @@ import { toDateString, toTimestamp } from '../utils/dates';
 import { insertOfficer } from './officerRepo';
 
 const DEMO_OFFICERS = [
-  { fullName: 'Joseph Tau', regimentalNumber: '10452', rank: 'Senior Constable', station: 'Boroko Police Station', pin: '2580' },
+  { fullName: 'Johnson PALINA', regimentalNumber: '16237', rank: 'Constable', station: 'Boroko Police Station', pin: '2580' },
   { fullName: 'Grace Waim', regimentalNumber: 'RPNGC-7731', rank: 'Sergeant', station: 'Lae Top Town Police Station', pin: '1357' },
 ];
 
@@ -27,7 +28,7 @@ const daysAgo = (n, hh = 9, mm = 0) => {
 };
 
 // Pages for the first demo officer. Order matters: page numbers follow it.
-const JOSEPH_PAGES = [
+const JOHNSON_PAGES = [
   {
     ago: 6, time: '08:40', status: 'saved',
     title: 'Market stall theft – Gordons Market',
@@ -103,15 +104,15 @@ export async function seedDatabase(db) {
     const pinRecord = await createPinRecord(pin);
     ids.push(await insertOfficer(db, { ...officer, ...pinRecord, createdAt: toTimestamp() }));
   }
-  const [josephId, graceId] = ids;
-  await insertSeedPages(db, josephId, JOSEPH_PAGES);
+  const [johnsonId, graceId] = ids;
+  await insertSeedPages(db, johnsonId, JOHNSON_PAGES);
   await insertSeedPages(db, graceId, GRACE_PAGES);
 
-  // An example amendment on Joseph's page 1, showing how corrections are recorded.
-  const first = await db.getFirstAsync('SELECT id FROM pages WHERE officer_id = ? AND page_number = 1', [josephId]);
+  // An example amendment on Johnson's page 1, showing how corrections are recorded.
+  const first = await db.getFirstAsync('SELECT id FROM pages WHERE officer_id = ? AND page_number = 1', [johnsonId]);
   await db.runAsync('INSERT INTO amendments (page_id, officer_id, note, created_at) VALUES (?, ?, ?, ?)', [
     first.id,
-    josephId,
+    johnsonId,
     'Correction: suspect was wearing a BLUE cap, not red, per second witness interviewed later the same day.',
     daysAgo(6, 15, 20).stamp,
   ]);
