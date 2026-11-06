@@ -99,6 +99,10 @@ The database is created and seeded the first time the app opens.
 | `16237` | `2580` | Constable Johnson PALINA, Provincial Police Headquarter - Morobe (PPHQ - Morobe) (3 saved pages, 1 draft, 1 amendment) |
 | `RPNGC-7731` | `1357` | Sergeant Grace Waim, Lae Top Town Police Station (1 saved page) |
 
+<img src="assets/johnson-palina.jpg" alt="Constable Johnson PALINA" width="120">
+
+The picture above ships with the app and appears on the dashboard for account `16237` on any device. Tap it in the app to replace it on that device.
+
 To reset the demo data, clear Expo Go's app data. On Android, long-press Expo Go, then *App info → Storage → Clear data*. On iPhone, delete and reinstall Expo Go. Note that this also removes data for any other projects opened in Expo Go.
 
 ---

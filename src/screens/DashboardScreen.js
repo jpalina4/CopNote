@@ -86,7 +86,7 @@ export default function DashboardScreen() {
   return (
     <Screen>
       <Banner message={photoError} />
-      <ProfileAvatar name={officer.fullName} uri={officer.photoUri} onPress={choosePhoto} busy={photoBusy} />
+      <ProfileAvatar name={officer.fullName} regimentalNumber={officer.regimentalNumber} uri={officer.photoUri} onPress={choosePhoto} busy={photoBusy} />
       <Text style={type.small}>{formatDate(toDateString())}</Text>
       <Text style={type.title}>
         Welcome, {officer.rank} {officer.fullName.split(' ')[0]}
