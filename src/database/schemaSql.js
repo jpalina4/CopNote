@@ -99,3 +99,10 @@ export const SCHEMA_V3 = `
       WHERE regimental_number = '10452' AND full_name = 'Joseph Tau'
         AND NOT EXISTS (SELECT 1 FROM officers WHERE regimental_number = '16237');
 `;
+
+/** Schema version 4: moves the first demo officer to their real station on databases already seeded. */
+export const SCHEMA_V4 = `
+      UPDATE officers
+      SET station = 'Provincial Police Headquarter - Morobe'
+      WHERE regimental_number = '16237' AND full_name = 'Johnson PALINA';
+`;

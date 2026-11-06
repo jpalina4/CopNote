@@ -7,7 +7,7 @@
  * described.
  *
  * Demo logins (shown on the login screen):
- *   Regimental no. 16237       PIN 2580  — Constable Johnson PALINA, Lae (Top Town)
+ *   Regimental no. 16237       PIN 2580  — Constable Johnson PALINA, PPHQ - Morobe
  *   Regimental no. RPNGC-7731  PIN 1357  — Sergeant Grace Waim, Lae (Top Town)
  */
 import { createPinRecord } from '../services/authService';
@@ -15,7 +15,7 @@ import { toDateString, toTimestamp } from '../utils/dates';
 import { insertOfficer } from './officerRepo';
 
 const DEMO_OFFICERS = [
-  { fullName: 'Johnson PALINA', regimentalNumber: '16237', rank: 'Constable', station: 'Lae Top Town Police Station', pin: '2580' },
+  { fullName: 'Johnson PALINA', regimentalNumber: '16237', rank: 'Constable', station: 'Provincial Police Headquarter - Morobe', pin: '2580' },
   { fullName: 'Grace Waim', regimentalNumber: 'RPNGC-7731', rank: 'Sergeant', station: 'Lae Top Town Police Station', pin: '1357' },
 ];
 
@@ -36,7 +36,7 @@ const JOHNSON_PAGES = [
     type: 'Theft',
     people: 'Complainant: female stall holder (betel nut and garden produce). Suspect: unknown male, approx. 20 years, red cap.',
     description: 'Complainant reported cash tin taken from her stall at approx. 08:15 while she served customers. Witnesses saw a young male run toward the PMV stop.',
-    action: 'Statement taken from complainant and one witness. Area patrolled, suspect not located. Complainant advised to attend Top Town station for formal report.',
+    action: 'Statement taken from complainant and one witness. Area patrolled, suspect not located. Complainant advised to attend PPHQ - Morobe for formal report.',
   },
   {
     ago: 4, time: '17:25', status: 'saved',

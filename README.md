@@ -96,7 +96,7 @@ The database is created and seeded the first time the app opens.
 
 | Regimental no. | PIN | Officer |
 |---|---|---|
-| `16237` | `2580` | Constable Johnson PALINA, Lae Top Town Police Station (3 saved pages, 1 draft, 1 amendment) |
+| `16237` | `2580` | Constable Johnson PALINA, Provincial Police Headquarter - Morobe (PPHQ - Morobe) (3 saved pages, 1 draft, 1 amendment) |
 | `RPNGC-7731` | `1357` | Sergeant Grace Waim, Lae Top Town Police Station (1 saved page) |
 
 To reset the demo data, clear Expo Go's app data. On Android, long-press Expo Go, then *App info → Storage → Clear data*. On iPhone, delete and reinstall Expo Go. Note that this also removes data for any other projects opened in Expo Go.
@@ -106,7 +106,7 @@ To reset the demo data, clear Expo Go's app data. On Android, long-press Expo Go
 ## Checks
 
 ```bash
-npm test          # 24 unit and database tests (Node's built-in test runner and SQLite)
+npm test          # 25 unit and database tests (Node's built-in test runner and SQLite)
 npm run typecheck # TypeScript (tsc --noEmit)
 npm run lint      # ESLint with eslint-config-expo
 npx expo-doctor   # dependency and config checks
