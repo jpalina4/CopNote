@@ -21,10 +21,10 @@ interface AppButtonProps {
 }
 
 const VARIANTS: Record<Variant, { bg: string; fg: string; border: string }> = {
-  primary: { bg: colors.primary, fg: '#fff', border: colors.primary },
-  secondary: { bg: colors.surface, fg: colors.primary, border: colors.primary },
+  primary: { bg: colors.brandRed, fg: '#fff', border: colors.brandRed },
+  secondary: { bg: colors.surface, fg: colors.brandRed, border: colors.brandRed },
   danger: { bg: colors.danger, fg: '#fff', border: colors.danger },
-  ghost: { bg: 'transparent', fg: colors.primary, border: 'transparent' },
+  ghost: { bg: 'transparent', fg: colors.brandRed, border: 'transparent' },
 };
 
 export default function AppButton({ title, onPress, variant = 'primary', icon, loading = false, disabled = false, style, accessibilityHint }: AppButtonProps) {

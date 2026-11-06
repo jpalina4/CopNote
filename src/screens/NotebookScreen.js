@@ -86,7 +86,7 @@ export default function NotebookScreen() {
           accessibilityLabel={`${showFilters ? 'Hide' : 'Show'} filters${activeCount ? `, ${activeCount} active` : ''}`}
           style={[styles.filterBtn, activeCount > 0 && styles.filterBtnActive]}
         >
-          <Ionicons name="options-outline" size={24} color={activeCount ? '#fff' : colors.primary} />
+          <Ionicons name="options-outline" size={24} color={activeCount ? '#fff' : colors.brandRed} />
           {activeCount ? <Text style={styles.filterCount}>{activeCount}</Text> : null}
         </Pressable>
       </View>
@@ -149,12 +149,12 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
     borderRadius: radius.md,
     borderWidth: 2,
-    borderColor: colors.primary,
+    borderColor: colors.brandRed,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.surface,
   },
-  filterBtnActive: { backgroundColor: colors.primary },
+  filterBtnActive: { backgroundColor: colors.brandRed },
   filterCount: { position: 'absolute', top: 2, right: 6, color: '#fff', fontWeight: '800', fontSize: 12 },
   filters: { backgroundColor: colors.surface, padding: spacing.md, borderRadius: radius.md, borderWidth: 1, borderColor: colors.border, marginBottom: spacing.lg },
   dateRow: { flexDirection: 'row', gap: spacing.sm },

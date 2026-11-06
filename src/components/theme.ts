@@ -1,23 +1,23 @@
 /**
- * Design tokens. Black, red and gold from the PNG flag, matching the logo,
- * with high contrast for reading outdoors in bright sun. Minimum touch target
- * is 48 dp, which is large enough for use while standing or wearing gloves.
+ * Design tokens. Red and blue, with high contrast for reading outdoors in
+ * bright sun. Minimum touch target is 48 dp, which is large enough for use
+ * while standing or wearing gloves.
  *
- * Black is the primary colour (headers, buttons) rather than red, so brand red
- * is never mistaken for `danger` red on delete buttons and errors.
+ * Blue is the primary colour (headers, charts, links). Brand red is for
+ * buttons and small brand details.
  */
 import type { TextStyle } from 'react-native';
 
 export const colors = {
-  primary: '#1A1A1A',
-  primaryDark: '#000000',
+  primary: '#1A4FA0',
+  primaryDark: '#123A78',
   brandRed: '#CE1126',
   accent: '#E0B000',
-  background: '#F4F4F5',
+  background: '#F1F4F9',
   surface: '#FFFFFF',
   text: '#111111',
-  textMuted: '#52525B',
-  border: '#D4D4D8',
+  textMuted: '#4A5568',
+  border: '#CCD4E0',
   danger: '#B42318',
   dangerBg: '#FEECEB',
   success: '#1E7B34',
@@ -38,6 +38,13 @@ export const FORM_MAX_WIDTH = 480;
 
 /** From this window width the tab bar moves to the left side of the screen. */
 export const WIDE_SCREEN = 900;
+
+/** The header on every screen: blue with white text. */
+export const headerBar = {
+  headerStyle: { backgroundColor: colors.primary },
+  headerTintColor: '#fff',
+  headerTitleStyle: { fontWeight: '700' },
+} as const;
 
 export const type: Record<'title' | 'heading' | 'body' | 'label' | 'small', TextStyle> = {
   title: { fontSize: 24, fontWeight: '700', color: colors.text },

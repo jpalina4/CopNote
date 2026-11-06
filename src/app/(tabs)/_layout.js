@@ -5,7 +5,7 @@
 import { useWindowDimensions } from 'react-native';
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, WIDE_SCREEN } from '../../components/theme';
+import { colors, headerBar, WIDE_SCREEN } from '../../components/theme';
 
 /** Returns the tabBarIcon function React Navigation calls with the current colour and size. */
 const icon = (name) =>
@@ -21,10 +21,8 @@ export default function TabsLayout() {
       screenOptions={{
         tabBarPosition: wide ? 'left' : 'bottom',
         tabBarLabelPosition: wide ? 'beside-icon' : 'below-icon',
-        headerStyle: { backgroundColor: colors.primary },
-        headerTintColor: '#fff',
-        headerTitleStyle: { fontWeight: '700' },
-        tabBarActiveTintColor: colors.brandRed,
+        ...headerBar,
+        tabBarActiveTintColor: colors.primary,
         tabBarActiveBackgroundColor: wide ? colors.background : 'transparent',
         tabBarInactiveTintColor: colors.textMuted,
         tabBarLabelStyle: { fontSize: 13, fontWeight: '600' },

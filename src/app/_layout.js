@@ -12,16 +12,10 @@ import { SQLiteProvider } from 'expo-sqlite';
 import { View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { LoadingView } from '../components/StateViews';
-import { colors } from '../components/theme';
+import { headerBar } from '../components/theme';
 import { AuthProvider, useAuth } from '../services/AuthContext';
 import { DATABASE_NAME, migrateDbIfNeeded } from '../database/schema';
 import LockScreen from '../screens/LockScreen';
-
-const headerStyle = {
-  headerStyle: { backgroundColor: colors.primary },
-  headerTintColor: '#fff',
-  headerTitleStyle: { fontWeight: '700' },
-};
 
 function RootNavigator() {
   const { officer, locked, restoring, reportActivity } = useAuth();
@@ -33,7 +27,7 @@ function RootNavigator() {
     // activity and return false so the touch carries on to its real target.
     <View style={{ flex: 1 }} onStartShouldSetResponderCapture={() => { reportActivity(); return false; }}>
       <View style={{ flex: 1 }} importantForAccessibility={locked ? 'no-hide-descendants' : 'auto'} accessibilityElementsHidden={locked}>
-        <Stack screenOptions={headerStyle}>
+        <Stack screenOptions={headerBar}>
           {/* Protected routes: screens only exist while their guard is true.
               Logging in or out automatically redirects to an allowed screen. */}
           <Stack.Protected guard={!signedIn}>
