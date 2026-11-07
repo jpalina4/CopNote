@@ -17,7 +17,18 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "package": "pg.ac.copnote"
+      "package": "pg.ac.copnote",
+      "versionCode": 1,
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
+      ],
+      "blockedPermissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.ACCESS_BACKGROUND_LOCATION",
+        "android.permission.SYSTEM_ALERT_WINDOW"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -37,7 +48,8 @@
         "expo-image-picker",
         {
           "cameraPermission": "CopNote uses the camera to photograph incident scenes and evidence.",
-          "photosPermission": "CopNote lets you attach existing photos to an incident page."
+          "photosPermission": "CopNote lets you attach existing photos to an incident page.",
+          "microphonePermission": false
         }
       ],
       [
@@ -46,7 +58,16 @@
           "locationWhenInUsePermission": "CopNote records where an incident note was written."
         }
       ],
-      "expo-font"
+      "expo-font",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#1A4FA0"
+        }
+      ]
     ],
     "scheme": "copnote",
     "experiments": {

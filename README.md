@@ -8,6 +8,12 @@ opens, just like turning to a new page in a bound notebook.
 > The first demo account uses the project author's name, rank and regimental number. All other officers, people and incidents in the sample data are **fictional**.
 > This is a student project, not an official Royal PNG Constabulary system.
 
+| | |
+|---|---|
+| Author | Johnson PALINA |
+| Student number | `TODO: add student number` |
+| Unit | IS323 Mobile App Development, PNG University of Technology |
+
 ---
 
 ## Features
@@ -107,12 +113,67 @@ To reset the demo data, clear Expo Go's app data. On Android, long-press Expo Go
 
 ---
 
+## Environment variables
+
+None are required yet: the app makes no network calls. `.env.example` lists
+the variable names reserved for a future backend. To use them, copy it to
+`.env` (which Git ignores) and fill in real values.
+
+| Variable | Purpose |
+|---|---|
+| `EXPO_PUBLIC_SUPABASE_URL` | Reserved: backend project URL |
+| `EXPO_PUBLIC_SUPABASE_ANON_KEY` | Reserved: publishable (anonymous) key. Never a service-role key |
+
+`EXPO_PUBLIC_` values are built into the APK and readable by anyone who has
+it. Cloud builds do not read your local `.env`: add each variable to the
+build profile in `eas.json` or with `eas env:create`.
+
+## External APIs and services
+
+| Service | Used for | Network? |
+|---|---|---|
+| expo-location (device GPS) | Optional coordinates on a notebook page | No |
+| expo-image-picker (camera and gallery) | Incident photos | No |
+| expo-print + expo-sharing | PDF export through the share sheet | No |
+| expo-secure-store | Session and PIN pepper in the OS keystore | No |
+| Expo Application Services (EAS Build) | Compiling the signed APK and AAB | Build time only |
+
+## Building the APK and AAB (EAS Build)
+
+Commit all work first. Profiles are defined in `eas.json`:
+
+| Profile | Produces | Purpose |
+|---|---|---|
+| `development` | APK with dev client | Optional, replaces Expo Go |
+| `preview` | APK | Installable build for testing and marking |
+| `production` | AAB | Google Play bundle (version code auto-increments) |
+
+```bash
+npm install -g eas-cli
+eas login
+eas init                                         # links the project, adds extra.eas.projectId to app.json
+eas build --platform android --profile preview     # APK
+eas build --platform android --profile production  # AAB
+eas build:list                                   # build IDs and status
+```
+
+EAS creates and stores the Android upload keystore on the first build.
+Back it up with `eas credentials`, and never commit it.
+
+## Screenshots
+
+`TODO: add screenshots from the installed APK to docs/screenshots/ and list them here`
+(login, dashboard, notebook list, page editor, page detail, PDF export).
+
+---
+
 ## Checks
 
 ```bash
 npm test          # 25 unit and database tests (Node's built-in test runner and SQLite)
 npm run typecheck # TypeScript (tsc --noEmit)
 npm run lint      # ESLint with eslint-config-expo
+npm run format:check # Prettier (npm run format to fix)
 npx expo-doctor   # dependency and config checks
 npx expo export --platform android   # proves the whole app bundles
 ```
@@ -184,3 +245,25 @@ for the full discussion.
 - The app cannot confirm that a registered person is a real serving officer.
 - The SQLite file and photos are protected only by the phone's own storage encryption and screen lock. A lost, unlocked or rooted phone is a real risk.
 - A real deployment would need a secure backend, official identity, encryption, audit logs, role-based access and sync.
+
+## Known limitations
+
+- **No remote database.** All data is stored on one device in SQLite, so it does not survive reinstalling the app and is not visible from a second phone.
+- **No network APIs yet.** GPS coordinates are recorded but not shown on a map or reverse-geocoded.
+- **Photos stay on the device.** They are copied into private app storage and are not uploaded anywhere.
+- **No PIN reset.** A forgotten PIN means registering again on that device.
+- Authentication is local and custom (see above), not handled by an identity provider.
+
+## AI assistance
+
+AI coding assistants were used on this project, as permitted by Section 9 of the project brief.
+
+| Tool | Used for |
+|---|---|
+| Claude Code (Anthropic) | `TODO: describe, e.g. scaffolding screens, writing tests, reviewing code against the brief, EAS and app.json configuration` |
+
+All generated code was reviewed, run and tested by the author, who can explain it.
+
+## Credits
+
+Built with open-source libraries: Expo and Expo modules, React Native, Expo Router, and @noble/hashes. See `package.json` for the full list.

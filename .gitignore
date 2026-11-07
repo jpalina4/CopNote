@@ -30,8 +30,15 @@ yarn-error.*
 .DS_Store
 *.pem
 
-# local env files
+# local env files (.env.example is committed on purpose)
+.env
 .env*.local
+
+# build artefacts and signing credentials
+*.apk
+*.aab
+*.keystore
+credentials.json
 
 # typescript
 *.tsbuildinfo
